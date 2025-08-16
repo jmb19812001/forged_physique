@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from "@/types/workout";
 import { Lock, Mail, User as UserIcon } from "lucide-react-native";
 

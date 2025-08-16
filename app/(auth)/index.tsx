@@ -2,7 +2,7 @@ import { useState } from "react";
 import { StyleSheet, Text, View, TextInput, Pressable, Image, Modal, Alert } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
-import { LinearGradient } from "expo-linear-gradient";
+import { LinearGradient } from 'expo-linear-gradient';
 import { Lock, Mail } from "lucide-react-native";
 
 export default function LoginScreen() {

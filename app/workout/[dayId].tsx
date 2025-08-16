@@ -7,7 +7,7 @@ import { useMesocycleStore } from "@/hooks/useMesocycleStore";
 import { useAuth } from "@/hooks/useAuth";
 import { Exercise, SetLog, WorkoutDay } from "@/types/workout";
 import { ChevronDown, ChevronUp, Info, Plus } from "lucide-react-native";
-import * as Haptics from "expo-haptics";
+import * as Haptics from 'expo-haptics';
 
 export default function WorkoutScreen() {
   const { dayId } = useLocalSearchParams();

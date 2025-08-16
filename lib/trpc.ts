@@ -1,6 +1,6 @@
 import { createTRPCReact } from "@trpc/react-query";
 import { httpLink } from "@trpc/client";
-import type { AppRouter } from "@/backend/trpc/app-router";
+import type { AppRouter } from "@/backend/trpc/routes/app-router";
 import superjson from "superjson";
 
 export const trpc = createTRPCReact<AppRouter>();
@@ -21,10 +21,10 @@ const getBaseUrl = () => {
 };
 
 export const trpcClient = trpc.createClient({
+  transformer: superjson, // Move transformer to root level
   links: [
     httpLink({
       url: `${getBaseUrl()}/api/trpc`,
-      transformer: superjson,
     }),
   ],
 });

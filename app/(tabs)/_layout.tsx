@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Dumbbell, Home, LineChart, User, Shield } from "lucide-react-native";
 import { useAuth } from "@/hooks/useAuth";
+import { Icons } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user } = useAuth();

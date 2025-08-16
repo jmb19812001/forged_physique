@@ -16,29 +16,16 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    ...FontAwesome.font,
-  });
-
-  useEffect(() => {
-    if (error) {
-      console.error(error);
-      throw error;
-    }
-  }, [loaded]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        {/* ...existing code... */}
+      </GestureHandlerRootView>
+    </QueryClientProvider>
+  );
 }
 
 function RootLayoutNav() {
@@ -64,41 +51,41 @@ function RootLayoutNav() {
             >
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen 
-                name="workout/[dayId]" 
-                options={{ 
+              <Stack.Screen
+                name="workout/[dayId]"
+                options={{
                   title: "Workout",
                   headerTitleStyle: {
                     color: "#fff",
                   },
-                }} 
+                }}
               />
-              <Stack.Screen 
-                name="mesocycle/create" 
-                options={{ 
+              <Stack.Screen
+                name="mesocycle/create"
+                options={{
                   title: "Create Mesocycle",
                   headerTitleStyle: {
                     color: "#fff",
                   },
-                }} 
+                }}
               />
-              <Stack.Screen 
-                name="mesocycle/[mesoId]" 
-                options={{ 
+              <Stack.Screen
+                name="mesocycle/[mesoId]"
+                options={{
                   title: "Mesocycle Details",
                   headerTitleStyle: {
                     color: "#fff",
                   },
-                }} 
+                }}
               />
-              <Stack.Screen 
-                name="exercise/[exerciseId]" 
-                options={{ 
+              <Stack.Screen
+                name="exercise/[exerciseId]"
+                options={{
                   title: "Exercise Details",
                   headerTitleStyle: {
                     color: "#fff",
                   },
-                }} 
+                }}
               />
             </Stack>
           </AppProvider>

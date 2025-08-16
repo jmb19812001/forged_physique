@@ -1,7 +1,7 @@
-# Forged Physique
+# Forge Physique
 
 ## Overview
-Forged Physique is a full-stack mobile application for iOS and Android designed as a personalized hypertrophy training coach. The app guides users through structured training blocks (mesocycles), tracks detailed workout data, and employs an RIR-based autoregulation system to provide intelligent recommendations for progressive overload and recovery. It features a clean, minimalist, dark-themed UI.
+Forge Physique is a full-stack mobile application for iOS and Android designed as a personalized hypertrophy training coach. The app guides users through structured training blocks (mesocycles), tracks detailed workout data, and employs an RIR-based autoregulation system to provide intelligent recommendations for progressive overload and recovery. It features a clean, minimalist, dark-themed UI.
 
 ## Features
 

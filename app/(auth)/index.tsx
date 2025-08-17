@@ -21,7 +21,7 @@ export default function LoginScreen() {
     
     try {
       await login(email, password);
-      router.replace("/(tabs)");
+      router.replace("/mesocycles");
     } catch (err) {
       setError("Invalid email or password");
     }

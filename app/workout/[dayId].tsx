@@ -181,7 +181,7 @@ export default function WorkoutScreen() {
         [
           {
             text: "OK",
-            onPress: () => router.replace("/(tabs)")
+            onPress: () => router.replace("/mesocycles")
           }
         ]
       );

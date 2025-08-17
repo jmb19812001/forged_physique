@@ -74,3 +74,11 @@ export interface MesocycleCreateParams {
   start_day: string;
   preset?: string;
 }
+
+export interface WorkoutTemplate {
+  name: string;
+  days: {
+    name: string;
+    muscleGroups: string[];
+  }[];
+}

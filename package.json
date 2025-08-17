@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@hono/node-server": "^1.9.0",
+    "@hono/trpc-server": "^0.4.0",
     "@nkzw/create-context-hook": "^1.1.0",
     "@react-native-async-storage/async-storage": "2.1.2",
-    "@tanstack/react-query": "^5.85.3",
-    "@trpc/client": "^10.45.0",
-    "@trpc/react-query": "^10.45.0",
-    "@trpc/server": "^10.45.0",
+    "@tanstack/react-query": "^5",
+    "@trpc/client": "^11",
+    "@trpc/react-query": "^11",
+    "@trpc/server": "^11",
     "expo": "^53.0.0",
     "expo-constants": "~17.1.7",
     "expo-haptics": "~14.1.4",
@@ -17,8 +19,10 @@
     "expo-router": "~5.1.4",
     "expo-splash-screen": "~0.30.10",
     "expo-status-bar": "~2.2.3",
-    "lucide-react-native": "^0.298.0",
-    "react": "19.0.0",
+    "hono": "^4.0.0",
+    "zod": "^3.22.4",
+    "lucide-react-native": "^0.539.0",
+    "react": "^19.1.1",
     "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-safe-area-context": "5.4.0",
@@ -36,6 +40,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "ts:check": "tsc"
+    "ts:check": "tsc",
+    "backend": "tsx backend/server.ts"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3",
+    "tsx": "^4.7.2"
   }
 }

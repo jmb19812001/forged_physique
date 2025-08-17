@@ -20,7 +20,7 @@ export default function SignupScreen() {
     
     try {
       await signup(email, password, userName);
-      router.replace("/(tabs)");
+      router.replace("/mesocycles");
     } catch (err) {
       setError("Error creating account. Please try again.");
     }

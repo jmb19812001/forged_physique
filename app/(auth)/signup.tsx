@@ -1,4 +1,3 @@
-signup.tsx
 import { useState } from "react";
 import { StyleSheet, Text, View, TextInput, Pressable, Image } from "react-native";
 import { router } from "expo-router";

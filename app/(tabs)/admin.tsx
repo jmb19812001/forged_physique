@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput, Modal } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from "@/types/workout";

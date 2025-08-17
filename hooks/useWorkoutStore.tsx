@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import createContextHook from "@nkzw/create-context-hook";
-import { MesoCycle, MesocycleCreateParams, SetLog, WorkoutDay, WorkoutSession } from "@/types/workout";
+import { MesoCycle, MesocycleCreateParams, SetLog, WorkoutDay, WorkoutSession, WorkoutTemplate, Exercise } from "@/types/workout";
 import { useAuth } from "@/hooks/useAuth";
 import { generateId } from "@/utils/helpers";
 import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
@@ -113,19 +113,19 @@ export const [WorkoutProvider, useWorkoutStore] = createContextHook<WorkoutConte
       
       if (params.preset) {
         // Use a preset template
-        const template = defaultWorkoutTemplates.find(t => t.name === params.preset);
+        const template = defaultWorkoutTemplates.find((t: WorkoutTemplate) => t.name === params.preset);
         
         if (template) {
           const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
           const startDayIndex = daysOfWeek.indexOf(params.start_day);
           
-          template.days.forEach((day, index) => {
+          template.days.forEach((day: { name: string; muscleGroups: string[] }, index: number) => {
             const dayOfWeek = (startDayIndex + index) % 7 + 1;
             
-            const workoutExercises = day.muscleGroups.flatMap(group => {
+            const workoutExercises = day.muscleGroups.flatMap((group: string) => {
               const groupExercises = getExercisesByMuscleGroup(group);
               // Take 2-3 exercises per muscle group
-              return groupExercises.slice(0, Math.floor(Math.random() * 2) + 2).map((exercise: any) => ({
+              return groupExercises.slice(0, Math.floor(Math.random() * 2) + 2).map((exercise: Exercise) => ({
                 ...exercise,
                 target_sets: 3
               }));

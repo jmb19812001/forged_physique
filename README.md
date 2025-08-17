@@ -56,9 +56,9 @@ Forge Physique is a full-stack mobile application for iOS and Android designed a
 ## Setup Instructions
 
 1. **Clone the Repository**: Ensure you have the project files in your local environment.
-2. **Install Dependencies**: Run `bun install` to install required npm packages.
-3. **Run the Backend Server**: In a separate terminal, run `bun run backend` to start the backend server.
-4. **Run the App**: Use `bun start` to launch the app in development mode. You can then scan the QR code with Expo Go or use a simulator.
+2. **Install Dependencies**: Run `npm install` to install required npm packages.
+3. **Run the Backend Server**: In a separate terminal, run `npm run backend` to start the backend server.
+4. **Run the App**: Use `npm start` to launch the app in development mode. You can then scan the QR code with Expo Go or use a simulator.
 5. **Environment Variables (Production)**: For production builds, you will need to set the `EXPO_PUBLIC_API_URL` environment variable to the URL of your deployed backend.
 
 ## Admin Console

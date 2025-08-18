@@ -22,22 +22,22 @@
     "hono": "^4.0.0",
     "lucide-react-native": "^0.539.0",
     "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
+    "react-native-web": "^0.20.0",
     "superjson": "^2.2.1",
-    "zod": "^3.22.4",
-    "react-dom": "19.0.0",
-    "react-native-web": "^0.20.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "babel-preset-expo": "^14.0.0",
     "@react-native/babel-preset": "^0.81.0",
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",
+    "babel-preset-expo": "^14.0.0",
     "tsx": "^4.7.2",
     "typescript": "~5.8.3"
   },

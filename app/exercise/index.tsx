@@ -1,9 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useExerciseStore } from "@/hooks/useExerciseStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { Checkbox } from "expo-checkbox";
+import { Exercise } from "@/types/workout";
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#121212",
+  },
+  header: {
+    padding: 20,
+    paddingTop: 50,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700" as const,
+    color: "#fff",
+    textAlign: "center",
+  },
+  exerciseCard: {
+    backgroundColor: "#1e1e1e",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    marginHorizontal: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  exerciseInfo: {
+    flex: 1,
+  },
+  exerciseName: {
+    fontSize: 16,
+    fontWeight: "600" as const,
+    color: "#fff",
+  },
+  exerciseEquipment: {
+    fontSize: 14,
+    color: "#888",
+    marginTop: 5,
+  },
+  doneButton: {
+    backgroundColor: "#e74c3c",
+    borderRadius: 8,
+    padding: 15,
+    alignItems: "center",
+    margin: 20,
+  },
+  doneButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700" as const,
+  },
+});
 
 export default function ExerciseScreen() {
   const { muscleGroups: muscleGroupsJSON, selectedExercises: selectedExercisesJSON, dayName } = useLocalSearchParams<{muscleGroups: string, selectedExercises: string, dayName: string}>();
@@ -43,7 +96,7 @@ export default function ExerciseScreen() {
           <Text style={styles.title}>Select Exercises for {dayName}</Text>
         </LinearGradient>
 
-        {exercises.map((exercise) => (
+        {exercises.map((exercise: Exercise) => (
           <Pressable key={exercise.exercise_id} style={styles.exerciseCard} onPress={() => toggleExercise(exercise.exercise_id)}>
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{exercise.name}</Text>
@@ -61,98 +114,5 @@ export default function ExerciseScreen() {
         <Text style={styles.doneButtonText}>Done</Text>
       </Pressable>
     </View>
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import { useExerciseStore } from "@/hooks/useExerciseStore";
-import { LinearGradient } from "expo-linear-gradient";
-
-export default function ExerciseScreen() {
-  const { exercises, getExercisesByMuscleGroup } = useExerciseStore();
-  const muscleGroups = ["Chest", "Back", "Legs", "Shoulders", "Arms"];
-
-  return (
-    <ScrollView style={styles.container}>
-      <LinearGradient
-        colors={["#2a2a2a", "#1e1e1e"]}
-        style={styles.header}
-      >
-        <Text style={styles.title}>Exercises</Text>
-      </LinearGradient>
-
-      {muscleGroups.map((muscleGroup) => (
-        <View key={muscleGroup} style={styles.muscleGroupSection}>
-          <Text style={styles.muscleGroupTitle}>{muscleGroup}</Text>
-          {getExercisesByMuscleGroup(muscleGroup).map((exercise) => (
-            <View key={exercise.exercise_id} style={styles.exerciseCard}>
-              <Text style={styles.exerciseName}>{exercise.name}</Text>
-              <Text style={styles.exerciseEquipment}>{exercise.equipment}</Text>
-            </View>
-          ))}
-        </View>
-      ))}
-    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#121212",
-  },
-  header: {
-    padding: 20,
-    paddingTop: 50,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700" as const,
-    color: "#fff",
-    textAlign: "center",
-  },
-  muscleGroupSection: {
-    padding: 20,
-  },
-  muscleGroupTitle: {
-    fontSize: 18,
-    fontWeight: "700" as const,
-    color: "#fff",
-    marginBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#333",
-    paddingBottom: 10,
-  },
-  exerciseCard: {
-    backgroundColor: "#1e1e1e",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    marginHorizontal: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  exerciseInfo: {
-    flex: 1,
-  },
-  exerciseName: {
-    fontSize: 16,
-    fontWeight: "600" as const,
-    color: "#fff",
-  },
-  exerciseEquipment: {
-    fontSize: 14,
-    color: "#888",
-    marginTop: 5,
-  },
-  doneButton: {
-    backgroundColor: "#e74c3c",
-    borderRadius: 8,
-    padding: 15,
-    alignItems: "center",
-    margin: 20,
-  },
-  doneButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700" as const,
-  },
-});

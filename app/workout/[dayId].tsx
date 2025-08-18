@@ -34,16 +34,18 @@ export default function WorkoutScreen() {
       if (workout) {
         setWorkoutDay(workout);
         
+        const exercises = workout.exercise_ids?.map(id => getExerciseById(id)).filter(Boolean) as Exercise[];
+
         // Initialize expanded state for all exercises
         const expanded: {[key: string]: boolean} = {};
-        workout.exercises?.forEach(exercise => {
+        exercises.forEach((exercise: Exercise) => {
           expanded[exercise.exercise_id] = true;
         });
         setExpandedExercises(expanded);
         
         // Initialize sets for each exercise
         const initialSets: {[key: string]: SetLog[]} = {};
-        workout.exercises?.forEach(exercise => {
+        exercises.forEach((exercise: Exercise) => {
           const targetSets = exercise.target_sets || 3;
           const sets: SetLog[] = [];
           
@@ -108,12 +110,13 @@ export default function WorkoutScreen() {
       if (exercise) {
         // Check if this was the last exercise for this muscle group
         const muscleGroup = exercise.primary_muscle_group;
-        const remainingExercisesForMuscleGroup = workoutDay?.exercises?.filter(
-          e => getExerciseById(e.exercise_id)?.primary_muscle_group === muscleGroup && 
+        const remainingExercisesForMuscleGroup = workoutDay?.exercise_ids?.map(id => getExerciseById(id)).filter(Boolean) as Exercise[];
+        const remaining = remainingExercisesForMuscleGroup.filter(
+          e => e.primary_muscle_group === muscleGroup &&
           exerciseSets[e.exercise_id].some(set => !set.completed)
         );
         
-        if (!remainingExercisesForMuscleGroup || remainingExercisesForMuscleGroup.length === 0) {
+        if (!remaining || remaining.length === 0) {
           // Show feedback modal for this muscle group
           setCurrentMuscleGroup(muscleGroup);
           setFeedbackModalVisible(true);
@@ -202,14 +205,15 @@ export default function WorkoutScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>{workoutDay.day_name}</Text>
           <Text style={styles.subtitle}>
-            {workoutDay.exercises?.length || 0} exercises
+            {workoutDay.exercise_ids?.length || 0} exercises
           </Text>
         </View>
 
-        {workoutDay.exercises?.map((workoutExercise) => {
-          const exercise = getExerciseById(workoutExercise.exercise_id);
+        {workoutDay.exercise_ids?.map((exerciseId) => {
+          const exercise = getExerciseById(exerciseId);
           if (!exercise) return null;
           
+          const workoutExercise = { exercise_id: exerciseId, target_sets: 3 }; // Assuming a default target_sets
           const isExpanded = expandedExercises[exercise.exercise_id];
           const sets = exerciseSets[exercise.exercise_id] || [];
           

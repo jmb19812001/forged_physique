@@ -116,7 +116,7 @@ export default function MesocycleDetailScreen() {
             <View style={styles.dayCardContent}>
               <Text style={styles.dayCardTitle}>{day.day_name}</Text>
               <Text style={styles.dayCardSubtitle}>
-                {day.exercises?.length || 0} exercises
+                {day.exercise_ids?.length || 0} exercises
               </Text>
             </View>
             <ChevronRight size={20} color="#888" />

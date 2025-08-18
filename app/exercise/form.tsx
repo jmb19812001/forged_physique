@@ -25,7 +25,7 @@ export default function ExerciseFormScreen() {
   const isEditing = Boolean(exerciseId);
 
   useEffect(() => {
-    if (isEditing) {
+    if (isEditing && exerciseId) {
       const exercise = getExerciseById(exerciseId) as Exercise;
       if (exercise) {
         setName(exercise.name);
@@ -55,7 +55,7 @@ export default function ExerciseFormScreen() {
       video_url: videoUrl,
     };
 
-    if (isEditing) {
+    if (isEditing && exerciseId) {
       editCustomExercise({ ...exerciseData, exercise_id: exerciseId });
     } else {
       addCustomExercise(exerciseData);

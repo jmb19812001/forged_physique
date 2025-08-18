@@ -30,15 +30,8 @@ export interface WorkoutDay {
   meso_id: string;
   day_name: string;
   day_of_week: number;
-  exercises?: Exercise[];
+  exercise_ids?: string[];
   session_id?: string;
-}
-
-export interface WorkoutDayExercise {
-  id: string;
-  day_id: string;
-  exercise_id: string;
-  target_sets: number;
 }
 
 export interface WorkoutSession {
@@ -81,4 +74,14 @@ export interface WorkoutTemplate {
     name: string;
     muscleGroups: string[];
   }[];
+}
+
+export interface WorkoutDayData {
+  dayName: string;
+  enabled: boolean;
+  muscleGroups: {
+    name: string;
+    enabled: boolean;
+  }[];
+  exercise_ids: string[];
 }

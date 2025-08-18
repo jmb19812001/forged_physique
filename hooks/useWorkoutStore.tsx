@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import createContextHook from "@nkzw/create-context-hook";
-import { MesoCycle, MesocycleCreateParams, SetLog, WorkoutDay, WorkoutSession, WorkoutTemplate, Exercise } from "@/types/workout";
+import { MesoCycle, MesocycleCreateParams, SetLog, WorkoutDay, WorkoutSession, WorkoutTemplate, Exercise, WorkoutDayData } from "@/types/workout";
 import { useAuth } from "@/hooks/useAuth";
 import { generateId } from "@/utils/helpers";
 import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
@@ -11,7 +11,7 @@ interface WorkoutContextType {
   sessions: WorkoutSession[];
   setLogs: SetLog[];
   isLoading: boolean;
-  createWorkoutDaysForMesocycle: (mesocycle: MesoCycle, params: MesocycleCreateParams) => Promise<void>;
+  createWorkoutDaysForMesocycle: (mesocycle: MesoCycle, workoutDays: WorkoutDayData[], params: MesocycleCreateParams) => Promise<void>;
   getWorkoutDaysForMesocycle: (mesoId: string) => WorkoutDay[];
   getWorkoutDay: (dayId: string) => WorkoutDay | undefined;
   getWorkoutForToday: (mesoId: string) => WorkoutDay | null;
@@ -105,18 +105,18 @@ export const [WorkoutProvider, useWorkoutStore] = createContextHook<WorkoutConte
     return defaultExercises.filter((exercise: any) => exercise.primary_muscle_group === muscleGroup);
   };
 
-  const createWorkoutDaysForMesocycle = async (mesocycle: MesoCycle, params: MesocycleCreateParams) => {
+  const createWorkoutDaysForMesocycle = async (mesocycle: MesoCycle, customWorkoutDays: WorkoutDayData[], params: MesocycleCreateParams) => {
     if (!user) throw new Error("User not authenticated");
     
     try {
-      const newWorkoutDays: WorkoutDay[] = [];
+      let newWorkoutDays: WorkoutDay[] = [];
+      const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
       
       if (params.preset) {
         // Use a preset template
         const template = defaultWorkoutTemplates.find((t: WorkoutTemplate) => t.name === params.preset);
         
         if (template) {
-          const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
           const startDayIndex = daysOfWeek.indexOf(params.start_day);
           
           template.days.forEach((day: { name: string; muscleGroups: string[] }, index: number) => {
@@ -125,10 +125,7 @@ export const [WorkoutProvider, useWorkoutStore] = createContextHook<WorkoutConte
             const workoutExercises = day.muscleGroups.flatMap((group: string) => {
               const groupExercises = getExercisesByMuscleGroup(group);
               // Take 2-3 exercises per muscle group
-              return groupExercises.slice(0, Math.floor(Math.random() * 2) + 2).map((exercise: Exercise) => ({
-                ...exercise,
-                target_sets: 3
-              }));
+              return groupExercises.slice(0, Math.floor(Math.random() * 2) + 2).map((exercise: Exercise) => (exercise.exercise_id));
             });
             
             newWorkoutDays.push({
@@ -136,21 +133,19 @@ export const [WorkoutProvider, useWorkoutStore] = createContextHook<WorkoutConte
               meso_id: mesocycle.meso_id,
               day_name: day.name,
               day_of_week: dayOfWeek,
-              exercises: workoutExercises,
+              exercise_ids: workoutExercises,
             });
           });
         }
       } else {
-        // Custom mesocycle - create empty workout days
-        for (let i = 0; i < params.days_per_week; i++) {
-          newWorkoutDays.push({
-            day_id: generateId(),
-            meso_id: mesocycle.meso_id,
-            day_name: `Day ${i + 1}`,
-            day_of_week: i + 1,
-            exercises: [],
-          });
-        }
+        // Custom mesocycle
+        newWorkoutDays = customWorkoutDays.map(day => ({
+          day_id: generateId(),
+          meso_id: mesocycle.meso_id,
+          day_name: day.dayName,
+          day_of_week: daysOfWeek.indexOf(day.dayName) + 1,
+          exercise_ids: day.exercise_ids,
+        }));
       }
       
       const updatedWorkoutDays = [...workoutDays, ...newWorkoutDays];

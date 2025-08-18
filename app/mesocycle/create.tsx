@@ -8,9 +8,9 @@ import { ChevronDown, ChevronRight, Plus } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function CreateMesocycleScreen() {
-  const { type = "preset" } = useLocalSearchParams();
+  const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string}>();
   const { createMesocycle } = useMesocycleStore();
-  const { getMuscleGroups } = useExerciseStore();
+  const { getMuscleGroups, getExerciseById } = useExerciseStore();
   const { createWorkoutDaysForMesocycle } = useWorkoutStore();
   
   const [mesoName, setMesoName] = useState("");
@@ -19,10 +19,10 @@ export default function CreateMesocycleScreen() {
   const [daysPerWeek, setDaysPerWeek] = useState("3");
   const [startDay, setStartDay] = useState("Monday");
   const [selectedPreset, setSelectedPreset] = useState("Full Body 3x");
-  const [workoutDays, setWorkoutDays] = useState<{ dayName: string, enabled: boolean, muscleGroups: { name: string, enabled: boolean }[] }[]>([
-    { dayName: "Monday", enabled: true, muscleGroups: [] },
-    { dayName: "Wednesday", enabled: true, muscleGroups: [] },
-    { dayName: "Friday", enabled: true, muscleGroups: [] },
+  const [workoutDays, setWorkoutDays] = useState<{ dayName: string, enabled: boolean, muscleGroups: { name: string, enabled: boolean }[], exercise_ids: string[] }[]>([
+    { dayName: "Monday", enabled: true, muscleGroups: [], exercise_ids: [] },
+    { dayName: "Wednesday", enabled: true, muscleGroups: [], exercise_ids: [] },
+    { dayName: "Friday", enabled: true, muscleGroups: [], exercise_ids: [] },
   ]);
   
   const muscleGroups = getMuscleGroups();
@@ -38,6 +38,17 @@ export default function CreateMesocycleScreen() {
     }));
     setWorkoutDays(updatedDays);
   }, []);
+
+  useEffect(() => {
+    if (selectedExercises && dayNameParam) {
+      const newExerciseIds = JSON.parse(selectedExercises);
+      setWorkoutDays(prev =>
+        prev.map(day =>
+          day.dayName === dayNameParam ? { ...day, exercise_ids: newExerciseIds } : day
+        )
+      );
+    }
+  }, [selectedExercises, dayNameParam]);
 
   const handleCreateMesocycle = async () => {
     if (!mesoName) {
@@ -57,7 +68,7 @@ export default function CreateMesocycleScreen() {
       const newMesocycle = await createMesocycle(params);
       
       // Create workout days for the new mesocycle
-      await createWorkoutDaysForMesocycle(newMesocycle, params);
+      await createWorkoutDaysForMesocycle(newMesocycle, workoutDays, params);
       
       Alert.alert(
         "Success",
@@ -95,10 +106,20 @@ export default function CreateMesocycleScreen() {
     const usedDays = workoutDays.map(d => d.dayName);
     const nextAvailableDay = daysOfWeek.find(day => !usedDays.includes(day)) || `Day ${workoutDays.length + 1}`;
     
-    setWorkoutDays(prev => [
-      ...prev,
-      { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })) }
-    ]);
+    const newDay = { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })), exercise_ids: [] };
+
+    const sortedDays = [...workoutDays, newDay].sort((a, b) => {
+      const dayAIndex = daysOfWeek.indexOf(a.dayName);
+      const dayBIndex = daysOfWeek.indexOf(b.dayName);
+
+      // Handle cases where dayName is not in daysOfWeek (e.g., "Day 5")
+      if (dayAIndex === -1) return 1;
+      if (dayBIndex === -1) return -1;
+
+      return dayAIndex - dayBIndex;
+    });
+
+    setWorkoutDays(sortedDays);
     setDaysPerWeek((parseInt(daysPerWeek) + 1).toString());
   };
 
@@ -268,10 +289,40 @@ export default function CreateMesocycleScreen() {
                     </View>
                   ))}
                   
-                  <Pressable style={styles.viewExercisesButton}>
+                  <Pressable
+                    style={styles.viewExercisesButton}
+                    onPress={() => {
+                      const enabledMuscleGroups = day.muscleGroups
+                        .filter(mg => mg.enabled)
+                        .map(mg => mg.name);
+
+                      router.push({
+                        pathname: "/exercise",
+                        params: {
+                          muscleGroups: JSON.stringify(enabledMuscleGroups),
+                          selectedExercises: JSON.stringify(day.exercise_ids),
+                          dayName: day.dayName
+                        }
+                      });
+                    }}
+                  >
                     <Text style={styles.viewExercisesText}>View Exercises</Text>
                     <ChevronRight size={16} color="#888" />
                   </Pressable>
+
+                  {day.exercise_ids.length > 0 && (
+                    <View style={styles.selectedExercisesContainer}>
+                      <Text style={styles.selectedExercisesTitle}>Selected Exercises:</Text>
+                      {day.exercise_ids.map(exerciseId => {
+                        const exercise = getExerciseById(exerciseId);
+                        return (
+                          <Text key={exerciseId} style={styles.selectedExerciseName}>
+                            - {exercise?.name}
+                          </Text>
+                        );
+                      })}
+                    </View>
+                  )}
                 </View>
               )}
             </View>
@@ -459,5 +510,22 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "700" as const,
+  },
+  selectedExercisesContainer: {
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: "#333",
+  },
+  selectedExercisesTitle: {
+    fontSize: 16,
+    fontWeight: "700" as const,
+    color: "#fff",
+    marginBottom: 10,
+  },
+  selectedExerciseName: {
+    fontSize: 14,
+    color: "#aaa",
+    marginBottom: 5,
   },
 });

@@ -40,7 +40,7 @@ export default function SignupScreen() {
           source={{ uri: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=100&auto=format&fit=crop" }} 
           style={styles.logoImage} 
         />
-        <Text style={styles.logoText}>Forge Physique</Text>
+        <Text style={styles.logoText}>Forged Physique</Text>
         <Text style={styles.tagline}>Science is Stronger</Text>
       </View>
 

@@ -95,10 +95,20 @@ export default function CreateMesocycleScreen() {
     const usedDays = workoutDays.map(d => d.dayName);
     const nextAvailableDay = daysOfWeek.find(day => !usedDays.includes(day)) || `Day ${workoutDays.length + 1}`;
     
-    setWorkoutDays(prev => [
-      ...prev,
-      { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })) }
-    ]);
+    const newDay = { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })) };
+
+    const sortedDays = [...workoutDays, newDay].sort((a, b) => {
+      const dayAIndex = daysOfWeek.indexOf(a.dayName);
+      const dayBIndex = daysOfWeek.indexOf(b.dayName);
+
+      // Handle cases where dayName is not in daysOfWeek (e.g., "Day 5")
+      if (dayAIndex === -1) return 1;
+      if (dayBIndex === -1) return -1;
+
+      return dayAIndex - dayBIndex;
+    });
+
+    setWorkoutDays(sortedDays);
     setDaysPerWeek((parseInt(daysPerWeek) + 1).toString());
   };
 
@@ -268,7 +278,7 @@ export default function CreateMesocycleScreen() {
                     </View>
                   ))}
                   
-                  <Pressable style={styles.viewExercisesButton}>
+                  <Pressable style={styles.viewExercisesButton} onPress={() => router.push("/exercise")}>
                     <Text style={styles.viewExercisesText}>View Exercises</Text>
                     <ChevronRight size={16} color="#888" />
                   </Pressable>

@@ -122,19 +122,89 @@ export const defaultExercises: Exercise[] = [
     instructions: "Stand with your feet shoulder-width apart, holding a dumbbell in each hand with a neutral grip (palms facing each other). Keeping your upper arms stationary, curl the dumbbells up to shoulder height. Lower the dumbbells back to the starting position with control.",
     video_url: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop"
   },
-];
-
-// Add more exercises as needed to reach 50 total
-for (let i = 0; i < 35; i++) {
-  const muscleGroups = ["Chest", "Back", "Legs", "Shoulders", "Arms"];
-  const equipment = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight"];
-  
-  defaultExercises.push({
+  // Chest Exercises
+  {
     exercise_id: generateId(),
-    name: `Exercise ${i + 16}`,
-    primary_muscle_group: muscleGroups[i % 5],
-    equipment: equipment[i % 5],
-    instructions: "Perform the exercise with proper form, focusing on the target muscle group.",
-    video_url: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop"
-  });
-}
+    name: "Machine Fly",
+    primary_muscle_group: "Chest",
+    equipment: "Machine",
+    instructions: "Sit in a machine fly (or pec deck) machine, and bring the handles together in front of your chest.",
+    video_url: "https://images.unsplash.com/photo-1594499039014-9b9a8a5b3d3a?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    exercise_id: generateId(),
+    name: "Decline Bench Press",
+    primary_muscle_group: "Chest",
+    equipment: "Barbell",
+    instructions: "Lie on a decline bench, grab the barbell with a medium-width grip, lower it to your chest, and press it back up.",
+    video_url: "https://images.unsplash.com/photo-1616803689944-6648a8a9c4a6?q=80&w=1000&auto=format&fit=crop"
+  },
+  // Back
+  {
+    exercise_id: generateId(),
+    name: "Chin-Up",
+    primary_muscle_group: "Back",
+    equipment: "Bodyweight",
+    instructions: "Hang from a bar with your palms facing you, and pull your body up until your chin is over the bar.",
+    video_url: "https://images.unsplash.com/photo-1517926944350-4a21a59b4335?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    exercise_id: generateId(),
+    name: "Pendlay Row",
+    primary_muscle_group: "Back",
+    equipment: "Barbell",
+    instructions: "Bend over at the waist with a barbell on the floor, and pull it towards your stomach, keeping your back parallel to the floor.",
+    video_url: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1000&auto=format&fit=crop"
+  },
+  // Legs
+  {
+    exercise_id: generateId(),
+    name: "Goblet Squat",
+    primary_muscle_group: "Legs",
+    equipment: "Dumbbell",
+    instructions: "Hold a dumbbell vertically against your chest, and squat down until your thighs are parallel to the floor.",
+    video_url: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    exercise_id: generateId(),
+    name: "Hack Squat",
+    primary_muscle_group: "Legs",
+    equipment: "Machine",
+    instructions: "Stand in a hack squat machine, and squat down until your thighs are parallel to the floor.",
+    video_url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1000&auto=format&fit=crop"
+  },
+  // Shoulders
+  {
+    exercise_id: generateId(),
+    name: "Seated Dumbbell Press",
+    primary_muscle_group: "Shoulders",
+    equipment: "Dumbbell",
+    instructions: "Sit on a bench with a dumbbell in each hand at shoulder level, and press them up until your arms are fully extended.",
+    video_url: "https://images.unsplash.com/photo-1598266663439-2056e6900339?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    exercise_id: generateId(),
+    name: "Barbell Front Raise",
+    primary_muscle_group: "Shoulders",
+    equipment: "Barbell",
+    instructions: "Stand with a barbell in front of you, and raise it up to shoulder level, keeping your arms straight.",
+    video_url: "https://images.unsplash.com/photo-1594499039014-9b9a8a5b3d3a?q=80&w=1000&auto=format&fit=crop"
+  },
+  // Arms
+  {
+    exercise_id: generateId(),
+    name: "Concentration Curl",
+    primary_muscle_group: "Arms",
+    equipment: "Dumbbell",
+    instructions: "Sit on a bench, lean forward, and curl a dumbbell up to your shoulder, keeping your elbow against your inner thigh.",
+    video_url: "https://images.unsplash.com/photo-1620188526322-1953d3733526?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    exercise_id: generateId(),
+    name: "Diamond Push-Up",
+    primary_muscle_group: "Arms",
+    equipment: "Bodyweight",
+    instructions: "Start in a plank position with your hands together in a diamond shape, lower your body until your chest nearly touches the floor, and then push back up.",
+    video_url: "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?q=80&w=1000&auto=format&fit=crop"
+  }
+];

@@ -1,9 +1,9 @@
-import { useRef, useState } from "react";
 import { StyleSheet, Text, View, TextInput, Pressable, Image, Modal, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Lock, Mail } from "lucide-react-native";
+import { useRef, useState } from "react";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");

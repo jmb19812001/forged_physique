@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { StyleSheet, Text, View, TextInput, Pressable, Image } from "react-native";
+import { useRef, useState } from "react";
+import { StyleSheet, Text, View, TextInput, Pressable, Image, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,6 +11,9 @@ export default function SignupScreen() {
   const [userName, setUserName] = useState("");
   const [error, setError] = useState("");
   const { signup } = useAuth();
+
+  const emailInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
 
   const handleSignup = async () => {
     if (!email || !password || !userName) {
@@ -27,11 +30,12 @@ export default function SignupScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#1a1a1a", "#121212"]}
-      style={styles.container}
-    >
-      <View style={styles.logoContainer}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <LinearGradient
+        colors={["#1a1a1a", "#121212"]}
+        style={styles.container}
+      >
+        <View style={styles.logoContainer}>
         <Image 
           source={{ uri: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=100&auto=format&fit=crop" }} 
           style={styles.logoImage} 
@@ -53,12 +57,15 @@ export default function SignupScreen() {
             placeholderTextColor="#888"
             value={userName}
             onChangeText={setUserName}
+            returnKeyType="next"
+            onSubmitEditing={() => emailInputRef.current?.focus()}
           />
         </View>
         
         <View style={styles.inputContainer}>
           <Mail size={20} color="#888" style={styles.inputIcon} />
           <TextInput
+            ref={emailInputRef}
             style={styles.input}
             placeholder="Email"
             placeholderTextColor="#888"
@@ -66,18 +73,23 @@ export default function SignupScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            returnKeyType="next"
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
           />
         </View>
         
         <View style={styles.inputContainer}>
           <Lock size={20} color="#888" style={styles.inputIcon} />
           <TextInput
+            ref={passwordInputRef}
             style={styles.input}
             placeholder="Password"
             placeholderTextColor="#888"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            returnKeyType="done"
+            onSubmitEditing={handleSignup}
           />
         </View>
         
@@ -95,7 +107,8 @@ export default function SignupScreen() {
           </Pressable>
         </View>
       </View>
-    </LinearGradient>
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 

@@ -1,6 +1,9 @@
+import { enableScreens } from "react-native-screens";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+
+enableScreens();
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider } from "@/context/AppContext";
 import { StatusBar } from "expo-status-bar";

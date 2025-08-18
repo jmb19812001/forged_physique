@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { StyleSheet, Text, View, TextInput, Pressable, Image, Modal, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Lock, Mail } from "lucide-react-native";
+import { useRef, useState } from "react";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -12,6 +12,8 @@ export default function LoginScreen() {
   const [resetModalVisible, setResetModalVisible] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const { login } = useAuth();
+
+  const passwordInputRef = useRef<TextInput>(null);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -78,18 +80,23 @@ export default function LoginScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            returnKeyType="next"
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
           />
         </View>
         
         <View style={styles.inputContainer}>
           <Lock size={20} color="#888" style={styles.inputIcon} />
           <TextInput
+            ref={passwordInputRef}
             style={styles.input}
             placeholder="Password"
             placeholderTextColor="#888"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            returnKeyType="done"
+            onSubmitEditing={handleLogin}
           />
         </View>
         

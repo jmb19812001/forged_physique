@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, TextInput, Pressable, Image, Modal, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, Pressable, Image, Modal, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -49,11 +49,12 @@ export default function LoginScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#1a1a1a", "#121212"]}
-      style={styles.container}
-    >
-      <View style={styles.logoContainer}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <LinearGradient
+        colors={["#1a1a1a", "#121212"]}
+        style={styles.container}
+      >
+        <View style={styles.logoContainer}>
         <Image 
           source={{ uri: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=100&auto=format&fit=crop" }} 
           style={styles.logoImage} 
@@ -152,7 +153,8 @@ export default function LoginScreen() {
           </View>
         </View>
       </Modal>
-    </LinearGradient>
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 

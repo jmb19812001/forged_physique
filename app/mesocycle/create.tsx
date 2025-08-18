@@ -8,7 +8,7 @@ import { ChevronDown, ChevronRight, Plus } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function CreateMesocycleScreen() {
-  const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string}>();
+  const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string, type?: string}>();
   const { createMesocycle } = useMesocycleStore();
   const { getMuscleGroups, getExerciseById } = useExerciseStore();
   const { createWorkoutDaysForMesocycle } = useWorkoutStore();
@@ -107,7 +107,6 @@ export default function CreateMesocycleScreen() {
     const nextAvailableDay = daysOfWeek.find(day => !usedDays.includes(day)) || `Day ${workoutDays.length + 1}`;
     
     const newDay = { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })), exercise_ids: [] };
-    const newDay = { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })) };
 
     const sortedDays = [...workoutDays, newDay].sort((a, b) => {
       const dayAIndex = daysOfWeek.indexOf(a.dayName);
@@ -307,8 +306,6 @@ export default function CreateMesocycleScreen() {
                       });
                     }}
                   >
-
-                  <Pressable style={styles.viewExercisesButton} onPress={() => router.push("/exercise")}>
                     <Text style={styles.viewExercisesText}>View Exercises</Text>
                     <ChevronRight size={16} color="#888" />
                   </Pressable>

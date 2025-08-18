@@ -31,6 +31,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
+          href: null,
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}
       />
@@ -55,15 +56,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <User size={24} color={color} />,
         }}
       />
-      {user && user.email === "admin@example.com" && (
-        <Tabs.Screen
-          name="admin"
-          options={{
-            title: "Admin",
-            tabBarIcon: ({ color }) => <Shield size={24} color={color} />,
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: "Admin",
+          tabBarIcon: ({ color }) => <Shield size={24} color={color} />,
+          href: user && user.email === "admin@example.com" ? "/admin" : null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "babel-preset-expo": "^14.0.0",
     "@react-native/babel-preset": "^0.81.0",
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",

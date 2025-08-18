@@ -21,6 +21,24 @@ export const [AuthProvider, useAuth] = createContextHook<AuthContextType>(() => 
     // Load user from AsyncStorage on app start
     const loadUser = async () => {
       try {
+        // Seed a test user if one doesn't exist
+        const usersJson = await AsyncStorage.getItem("users");
+        const users: User[] = usersJson ? JSON.parse(usersJson) : [];
+
+        const testUser = users.find(u => u.email === "test@test.com");
+
+        if (!testUser) {
+          const newUser: User = {
+            user_id: generateId(),
+            email: "test@test.com",
+            password_hash: "password", // This would be hashed in a real app
+            user_name: "Test User",
+            unit_preference: "lbs",
+          };
+          users.push(newUser);
+          await AsyncStorage.setItem("users", JSON.stringify(users));
+        }
+
         const userJson = await AsyncStorage.getItem("user");
         if (userJson) {
           setUser(JSON.parse(userJson));

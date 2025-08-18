@@ -19,7 +19,10 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <AppProvider>
             <StatusBar style="light" />
-            <Stack />
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            </Stack>
           </AppProvider>
         </QueryClientProvider>
       </trpc.Provider>

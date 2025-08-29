@@ -1,6 +1,7 @@
 import { enableScreens } from "react-native-screens";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
+import { ActivityIndicator, View } from "react-native";
 import { Stack } from "expo-router";
 
 enableScreens();
@@ -15,6 +16,18 @@ import InputAccessoryBar from "@/components/InputAccessoryBar";
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    ...FontAwesome.font,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#000" }}>
+        <ActivityIndicator color="#fff" size="large" />
+      </View>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <trpc.Provider client={trpcClient} queryClient={queryClient}>

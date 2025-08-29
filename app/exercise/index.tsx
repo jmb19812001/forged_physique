@@ -168,28 +168,28 @@ export default function ExerciseScreen() {
   const allExercises = useMemo(() => muscleGroups.flatMap((mg: string) => getExercisesByMuscleGroup(mg)), [muscleGroups]);
   const equipmentOptions = useMemo(() => {
     const set = new Set<string>();
-    allExercises.forEach(e => { if (e.equipment) set.add(e.equipment); });
+    allExercises.forEach((e: Exercise) => { if (e.equipment) set.add(e.equipment); });
     return ["All", ...Array.from(set).sort()];
   }, [allExercises]);
   const filtered = useMemo(() => {
     let list: Exercise[] = allExercises;
-    if (activeGroup !== "All") list = list.filter(e => e.primary_muscle_group === activeGroup);
-    if (equipmentFilter !== "All") list = list.filter(e => (e.equipment || "") === equipmentFilter);
+    if (activeGroup !== "All") list = list.filter((e: Exercise) => e.primary_muscle_group === activeGroup);
+    if (equipmentFilter !== "All") list = list.filter((e: Exercise) => (e.equipment || "") === equipmentFilter);
     if (query.trim()) {
       const q = query.trim().toLowerCase();
-      list = list.filter(e => e.name.toLowerCase().includes(q) || (e.equipment || "").toLowerCase().includes(q));
+      list = list.filter((e: Exercise) => e.name.toLowerCase().includes(q) || (e.equipment || "").toLowerCase().includes(q));
     }
     return list;
   }, [allExercises, activeGroup, equipmentFilter, query]);
-  const groupsToRender = useMemo(() => {
+  const groupsToRender = useMemo((): { group: string; items: Exercise[] }[] => {
     const groups = new Map<string, Exercise[]>();
-    filtered.forEach(e => {
+    filtered.forEach((e: Exercise) => {
       const key = e.primary_muscle_group;
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(e);
     });
     const keys = activeGroup === "All" ? muscleGroups : [activeGroup];
-    return keys.filter(k => groups.has(k)).map(k => ({ group: k, items: groups.get(k)! }));
+    return keys.filter((k: string) => groups.has(k)).map((k: string) => ({ group: k, items: groups.get(k)! }));
   }, [filtered, activeGroup, muscleGroups]);
 
   return (
@@ -238,8 +238,14 @@ export default function ExerciseScreen() {
           {groupsToRender.map(({ group, items }) => {
             const isCollapsed = !!collapsed[group];
             const visibleItems = items; // already filtered
-            const selectAll = () => setSelected(prev => Array.from(new Set([...prev, ...visibleItems.map(i => i.exercise_id)])));
-            const clearAll = () => setSelected(prev => prev.filter(id => !visibleItems.some(i => i.exercise_id === id)));
+            const selectAll = () =>
+              setSelected(prev =>
+                Array.from(new Set([...prev, ...visibleItems.map((i: Exercise) => i.exercise_id)]))
+              );
+            const clearAll = () =>
+              setSelected(prev =>
+                prev.filter(id => !visibleItems.some((i: Exercise) => i.exercise_id === id))
+              );
             return (
               <View key={group}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 10, paddingVertical: 8 }}>

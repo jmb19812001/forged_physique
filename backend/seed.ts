@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 import { db } from "./db";
 import { users, exercises } from "./schema";
+import crypto from "crypto";
 
 async function main() {
   console.log("Seeding database from data/exerciseLibrary.json...");
@@ -22,6 +23,7 @@ async function main() {
   const jsonPath = path.resolve(process.cwd(), "data", "exerciseLibrary.json");
   const library = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as Array<any>;
   for (const ex of library) {
+    const exId: string = ex.exercise_id || `ex_${crypto.createHash('md5').update(ex.name).digest('hex').slice(0, 10)}`;
     // Normalize target muscles if present (string | string[])
     const tm = ((): string | undefined => {
       const val = (ex as any).target_muscles ?? (ex as any).target_muscle;
@@ -33,7 +35,7 @@ async function main() {
     await db
       .insert(exercises)
       .values({
-        exercise_id: ex.exercise_id,
+        exercise_id: exId,
         name: ex.name,
         primary_muscle_group: ex.primary_muscle_group,
         equipment: ex.equipment,

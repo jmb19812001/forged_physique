@@ -56,6 +56,7 @@
     "backend": "tsx backend/server.ts",
     "db:generate": "drizzle-kit generate",
     "db:apply": "tsx backend/applyMigrations.ts",
-    "db:seed": "tsx backend/seed.ts"
+    "db:seed": "tsx backend/seed.ts",
+    "validate:exercises": "node -e \"const fs=require('fs'); try{ JSON.parse(fs.readFileSync('data/exerciseLibrary.json','utf8')); console.log('exerciseLibrary.json is valid JSON'); } catch(e){ console.error('Invalid JSON:', e.message); process.exit(1); }\""
   }
 }

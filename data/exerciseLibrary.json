@@ -142,6 +142,8 @@
     "target_muscle": "Biceps (short head)",
     "equipment": "Machine",
     "instructions": "Position upper arms on pad and grip handles. Curl weight up while keeping arms glued to pad, then lower until elbows almost straighten, using a smooth, controlled tempo."
+  },
+  {
     "exercise_id": "q1m61vdyzjrmue84oy6vo",
     "name": "Barbell Bench Press",
     "primary_muscle_group": "Chest",

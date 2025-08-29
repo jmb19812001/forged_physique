@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { users, exercises, workouts } from "./schema";
+import { users, exercises, workouts, mesocycles, workout_days, meso_drafts } from "./schema";
 
 // Ensure env vars are available even if dotenv/config didn't load under tsx
 if (!process.env.TURSO_URL || !process.env.TURSO_AUTH_TOKEN) {
@@ -30,6 +30,6 @@ export const client = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
-export const db = drizzle(client, { schema: { users, exercises, workouts } });
+export const db = drizzle(client, { schema: { users, exercises, workouts, mesocycles, workout_days, meso_drafts } });
 
 export type DB = typeof db;

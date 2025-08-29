@@ -25,3 +25,27 @@ export const workouts = sqliteTable("workouts", {
   user_id: text("user_id").notNull(),
   session_date: text("session_date").notNull(),
 });
+
+// Mesocycle planning tables
+export const mesocycles = sqliteTable("mesocycles", {
+  meso_id: text("meso_id").primaryKey(),
+  user_id: text("user_id").notNull(),
+  meso_name: text("meso_name").notNull(),
+  start_date: text("start_date").notNull(),
+  duration_weeks: integer("duration_weeks").notNull(),
+  is_active: integer("is_active").notNull(), // 0/1 boolean
+});
+
+export const workout_days = sqliteTable("workout_days", {
+  day_id: text("day_id").primaryKey(),
+  meso_id: text("meso_id").notNull(),
+  day_name: text("day_name").notNull(),
+  day_of_week: integer("day_of_week").notNull(),
+  exercise_ids: text("exercise_ids"), // JSON array
+});
+
+export const meso_drafts = sqliteTable("meso_drafts", {
+  user_id: text("user_id").primaryKey(),
+  draft: text("draft").notNull(),
+  updated_at: text("updated_at").notNull(),
+});

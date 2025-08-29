@@ -63,7 +63,10 @@ export const [MesocycleProvider, useMesocycleStore] = createContextHook<Mesocycl
     try {
       // Enforce unique name per user (case-insensitive)
       const nameLower = params.meso_name.trim().toLowerCase();
-      const duplicate = mesocycles.some(m => m.meso_name.trim().toLowerCase() === nameLower);
+      const duplicate = mesocycles.some(m => {
+        const n = typeof m.meso_name === 'string' ? m.meso_name.trim().toLowerCase() : '';
+        return !!n && n === nameLower;
+      });
       if (duplicate) {
         throw new Error("Mesocycle name already exists. Please choose a unique name.");
       }
@@ -126,7 +129,10 @@ export const [MesocycleProvider, useMesocycleStore] = createContextHook<Mesocycl
 
       if (updates.meso_name) {
         const nameLower = updates.meso_name.trim().toLowerCase();
-        const duplicate = mesocycles.some(m => m.meso_id !== id && m.meso_name.trim().toLowerCase() === nameLower);
+        const duplicate = mesocycles.some(m => {
+          const n = typeof m.meso_name === 'string' ? m.meso_name.trim().toLowerCase() : '';
+          return m.meso_id !== id && !!n && n === nameLower;
+        });
         if (duplicate) throw new Error("Mesocycle name already exists. Please choose a unique name.");
       }
 

@@ -9,6 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import SelectField from "@/components/SelectField";
 import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
 import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CreateMesocycleScreen() {
   const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string, type?: string}>();
@@ -28,13 +29,39 @@ export default function CreateMesocycleScreen() {
     { dayName: "Wednesday", enabled: true, muscleGroups: [], exercise_ids: [] },
     { dayName: "Friday", enabled: true, muscleGroups: [], exercise_ids: [] },
   ]);
+  const [draftLoaded, setDraftLoaded] = useState(false);
   
   const muscleGroups = getMuscleGroups();
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+  const DRAFT_KEY = "meso_create_draft";
+
+  // Load draft on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const draft = JSON.parse(raw);
+          if (Array.isArray(draft.workoutDays)) setWorkoutDays(draft.workoutDays);
+          if (typeof draft.mesoName === "string") setMesoName(draft.mesoName);
+          if (typeof draft.durationWeeks === "string") setDurationWeeks(draft.durationWeeks);
+          if (typeof draft.daysPerWeek === "string") setDaysPerWeek(draft.daysPerWeek);
+          if (typeof draft.startDay === "string") setStartDay(draft.startDay);
+          if (typeof draft.selectedPreset === "string") setSelectedPreset(draft.selectedPreset);
+          if (draft.sex === "male" || draft.sex === "female") setSex(draft.sex);
+        }
+      } catch {}
+      finally {
+        setDraftLoaded(true);
+      }
+    })();
+  }, []);
 
   const getSuggestedName = (base: string) => {
-    const existing = mesocycles.map(m => m.meso_name.trim().toLowerCase());
+    const existing = mesocycles
+      .map(m => (typeof m.meso_name === 'string' ? m.meso_name.trim().toLowerCase() : ''))
+      .filter(Boolean);
     const b = base.trim();
     if (!b) return "";
     const lower = b.toLowerCase();
@@ -43,6 +70,14 @@ export default function CreateMesocycleScreen() {
     while (existing.includes(`${lower} (${n})`)) n++;
     return `${b} (${n})`;
   };
+  const nameExists = (() => {
+    const n = mesoName.trim().toLowerCase();
+    if (!n) return false;
+    return mesocycles.some(m => {
+      const name = typeof m.meso_name === 'string' ? m.meso_name.trim().toLowerCase() : '';
+      return !!name && name === n;
+    });
+  })();
 
   const getNextAvailableDay = (usedDays: string[], start: string) => {
     const startIdx = daysOfWeek.indexOf(start as any);
@@ -54,18 +89,45 @@ export default function CreateMesocycleScreen() {
   };
 
   useEffect(() => {
-    // Initialize muscle groups for each day
-    const updatedDays = workoutDays.map(day => ({
-      ...day,
-      muscleGroups: muscleGroups.map(mg => ({
-        name: mg,
-        enabled: day.enabled && (mg === "Chest" || mg === "Back" || mg === "Legs")
-      }))
+    // Initialize or merge muscle groups per day without clobbering user choices
+    setWorkoutDays(prev => prev.map(day => {
+      const existing = new Map((day.muscleGroups || []).map(m => [m.name, m.enabled] as const));
+      const merged = muscleGroups.map(mg => {
+        const prevEnabled = existing.get(mg);
+        if (prevEnabled !== undefined) {
+          return { name: mg, enabled: prevEnabled };
+        }
+        // Defaults only for first-time init per day
+        const defaultOn = day.enabled && (mg === "Chest" || mg === "Back" || mg === "Legs");
+        return { name: mg, enabled: defaultOn };
+      });
+      // Avoid unnecessary state updates
+      const changed = merged.length !== day.muscleGroups.length || merged.some((m, i) => {
+        const d = day.muscleGroups[i];
+        return !d || d.name !== m.name || d.enabled !== m.enabled;
+      });
+      return changed ? { ...day, muscleGroups: merged } : day;
     }));
-    setWorkoutDays(updatedDays);
-  }, []);
+  }, [muscleGroups.join(',')]);
 
+  // Persist draft when key fields change (after initial load)
   useEffect(() => {
+    if (!draftLoaded) return;
+    const draft = {
+      workoutDays,
+      mesoName,
+      durationWeeks,
+      daysPerWeek,
+      startDay,
+      selectedPreset,
+      sex,
+    };
+    AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft)).catch(() => {});
+  }, [draftLoaded, workoutDays, mesoName, durationWeeks, daysPerWeek, startDay, selectedPreset, sex]);
+
+  // Apply selection returned from the exercise screen AFTER draft has loaded
+  useEffect(() => {
+    if (!draftLoaded) return;
     if (selectedExercises && dayNameParam) {
       const newExerciseIds = JSON.parse(selectedExercises);
       setWorkoutDays(prev =>
@@ -74,7 +136,7 @@ export default function CreateMesocycleScreen() {
         )
       );
     }
-  }, [selectedExercises, dayNameParam]);
+  }, [draftLoaded, selectedExercises, dayNameParam]);
 
   const handleCreateMesocycle = async () => {
     if (!mesoName) {
@@ -96,6 +158,9 @@ export default function CreateMesocycleScreen() {
       // Create workout days for the new mesocycle
       await createWorkoutDaysForMesocycle(newMesocycle, workoutDays, params);
       
+      // Clear draft after successful creation
+      try { await AsyncStorage.removeItem(DRAFT_KEY); } catch {}
+
       Alert.alert(
         "Success",
         "Mesocycle created successfully!",
@@ -329,7 +394,7 @@ export default function CreateMesocycleScreen() {
               onSubmitEditing={() => Keyboard.dismiss()}
               inputAccessoryViewID={ACCESSORY_ID}
             />
-            {!!mesoName.trim() && mesocycles.some(m => m.meso_name.trim().toLowerCase() === mesoName.trim().toLowerCase()) && (
+            {nameExists && (
               <View style={styles.nameWarningRow}>
                 <Text style={styles.nameWarning}>Name already exists.</Text>
                 <Pressable onPress={() => setMesoName(getSuggestedName(mesoName))} style={styles.suggestButton}>

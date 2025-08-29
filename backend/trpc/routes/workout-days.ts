@@ -2,12 +2,13 @@ import { randomUUID } from "crypto";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./create-context";
 import { workout_days } from "../../schema";
+import { eq } from "drizzle-orm";
 
 export const workoutDaysRouter = createTRPCRouter({
   getByMesocycle: publicProcedure
     .input(z.object({ meso_id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.select().from(workout_days).where((f, { eq }) => eq(f.meso_id, input.meso_id));
+      return await ctx.db.select().from(workout_days).where(eq(workout_days.meso_id, input.meso_id));
     }),
 
   saveForMesocycle: publicProcedure
@@ -22,7 +23,7 @@ export const workoutDaysRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       // naive approach: delete then insert
-      await ctx.db.delete(workout_days).where((f, { eq }) => eq(f.meso_id, input.meso_id));
+      await ctx.db.delete(workout_days).where(eq(workout_days.meso_id, input.meso_id));
       for (const d of input.days) {
         await ctx.db.insert(workout_days).values({
           day_id: d.day_id ?? randomUUID(),
@@ -38,10 +39,13 @@ export const workoutDaysRouter = createTRPCRouter({
   deleteByMesocycle: publicProcedure
     .input(z.object({ meso_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(workout_days).where((f, { eq }) => eq(f.meso_id, input.meso_id));
+      await ctx.db.delete(workout_days).where(eq(workout_days.meso_id, input.meso_id));
       return { ok: true };
     }),
 });
 
 export type WorkoutDaysRouter = typeof workoutDaysRouter;
+
+
+
 

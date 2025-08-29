@@ -2,12 +2,13 @@ import { randomUUID } from "crypto";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./create-context";
 import { mesocycles } from "../../schema";
+import { eq } from "drizzle-orm";
 
 export const mesocyclesRouter = createTRPCRouter({
   list: publicProcedure
     .input(z.object({ user_id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.select().from(mesocycles).where((f, { eq }) => eq(f.user_id, input.user_id));
+      return await ctx.db.select().from(mesocycles).where(eq(mesocycles.user_id, input.user_id));
     }),
 
   create: publicProcedure
@@ -33,12 +34,12 @@ export const mesocyclesRouter = createTRPCRouter({
   setActive: publicProcedure
     .input(z.object({ user_id: z.string(), meso_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const list = await ctx.db.select().from(mesocycles).where((f, { eq }) => eq(f.user_id, input.user_id));
+      const list = await ctx.db.select().from(mesocycles).where(eq(mesocycles.user_id, input.user_id));
       for (const m of list) {
         await ctx.db
           .update(mesocycles)
           .set({ is_active: m.meso_id === input.meso_id ? 1 : 0 })
-          .where((f, { eq }) => eq(f.meso_id, m.meso_id));
+          .where(eq(mesocycles.meso_id, m.meso_id));
       }
       return { ok: true };
     }),
@@ -52,17 +53,20 @@ export const mesocyclesRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const { meso_id, ...updates } = input;
-      await ctx.db.update(mesocycles).set(updates as any).where((f, { eq }) => eq(f.meso_id, meso_id));
+      await ctx.db.update(mesocycles).set(updates as any).where(eq(mesocycles.meso_id, meso_id));
       return { ok: true };
     }),
 
   delete: publicProcedure
     .input(z.object({ meso_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(mesocycles).where((f, { eq }) => eq(f.meso_id, input.meso_id));
+      await ctx.db.delete(mesocycles).where(eq(mesocycles.meso_id, input.meso_id));
       return { ok: true };
     }),
 });
 
 export type MesocyclesRouter = typeof mesocyclesRouter;
+
+
+
 

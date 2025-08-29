@@ -1,12 +1,13 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./create-context";
 import { meso_drafts } from "../../schema";
+import { eq } from "drizzle-orm";
 
 export const draftsRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ user_id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.db.select().from(meso_drafts).where((f, { eq }) => eq(f.user_id, input.user_id));
+      const res = await ctx.db.select().from(meso_drafts).where(eq(meso_drafts.user_id, input.user_id));
       return res[0] ?? null;
     }),
 
@@ -25,10 +26,13 @@ export const draftsRouter = createTRPCRouter({
   clear: publicProcedure
     .input(z.object({ user_id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(meso_drafts).where((f, { eq }) => eq(f.user_id, input.user_id));
+      await ctx.db.delete(meso_drafts).where(eq(meso_drafts.user_id, input.user_id));
       return { ok: true };
     }),
 });
 
 export type DraftsRouter = typeof draftsRouter;
+
+
+
 

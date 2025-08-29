@@ -103,7 +103,7 @@ export default function CreateMesocycleScreen() {
   };
 
   useEffect(() => {
-    // Initialize or merge muscle groups per day without clobbering user choices
+    if (!draftLoaded) return;
     setWorkoutDays(prev => prev.map(day => {
       const existing = new Map((day.muscleGroups || []).map(m => [m.name, m.enabled] as const));
       const merged = muscleGroups.map(mg => {
@@ -122,8 +122,7 @@ export default function CreateMesocycleScreen() {
       });
       return changed ? { ...day, muscleGroups: merged } : day;
     }));
-  }, [muscleGroups.join(',')]);
-
+  }, [draftLoaded, muscleGroups.join(",")]);
   // Persist draft to server when key fields change (after initial load)
   useEffect(() => {
     if (!draftLoaded) return;
@@ -500,7 +499,20 @@ export default function CreateMesocycleScreen() {
                   
                   <Pressable
                     style={styles.viewExercisesButton}
-                    onPress={() => {
+                    onPress={async () => {
+                      // Ensure latest draft is saved to server before navigating
+                      if (user) {
+                        const draft = {
+                          workoutDays,
+                          mesoName,
+                          durationWeeks,
+                          daysPerWeek,
+                          startDay,
+                          selectedPreset,
+                          sex,
+                        };
+                        try { await draftsSet.mutateAsync({ user_id: user.user_id, draft }); } catch {}
+                      }
                       const enabledMuscleGroups = day.muscleGroups
                         .filter(mg => mg.enabled)
                         .map(mg => mg.name);
@@ -786,3 +798,5 @@ const styles = StyleSheet.create({
     fontWeight: "700" as const,
   },
 });
+
+

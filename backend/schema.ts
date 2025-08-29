@@ -16,6 +16,8 @@ export const exercises = sqliteTable("exercises", {
   instructions: text("instructions").notNull(),
   video_url: text("video_url"),
   target_sets: integer("target_sets"),
+  // JSON string array of target muscles (optional)
+  target_muscles: text("target_muscles"),
 });
 
 export const workouts = sqliteTable("workouts", {
@@ -23,4 +25,3 @@ export const workouts = sqliteTable("workouts", {
   user_id: text("user_id").notNull(),
   session_date: text("session_date").notNull(),
 });
-

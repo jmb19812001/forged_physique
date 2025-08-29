@@ -14,6 +14,8 @@ export interface Exercise {
   instructions: string;
   video_url?: string;
   target_sets?: number;
+  // Optional list of target muscles (secondary or specific heads)
+  target_muscles?: string[];
 }
 
 export interface MesoCycle {

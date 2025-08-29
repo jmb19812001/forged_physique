@@ -258,6 +258,11 @@ export default function ExerciseScreen() {
                         <View style={styles.exerciseInfo}>
                           <Text style={styles.exerciseName}>{exercise.name}</Text>
                           <Text style={styles.exerciseEquipment}>{exercise.equipment} • {exercise.primary_muscle_group}</Text>
+                          {Array.isArray((exercise as any).target_muscles) && (exercise as any).target_muscles.length > 0 && (
+                            <Text style={styles.exerciseEquipment}>
+                              Targets: {(exercise as any).target_muscles.slice(0,3).join(', ')}
+                            </Text>
+                          )}
                         </View>
                         <Checkbox
                           value={selected.includes(exercise.exercise_id)}

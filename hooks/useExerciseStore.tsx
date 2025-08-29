@@ -45,11 +45,29 @@ export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseCo
   });
 
   useEffect(() => {
-    if (dbExercises) setRemoteExercises(dbExercises as Exercise[]);
+    if (dbExercises) {
+      // Normalize target_muscles to string[] if it is stored as JSON string
+      const normalized = (dbExercises as any[]).map((e) => {
+        const tm = (e as any).target_muscles;
+        let tms: string[] | undefined = undefined;
+        if (Array.isArray(tm)) tms = tm;
+        else if (typeof tm === "string") {
+          try { tms = JSON.parse(tm); } catch {}
+        }
+        return { ...e, target_muscles: tms } as Exercise;
+      });
+      setRemoteExercises(normalized);
+    }
   }, [dbExercises]);
 
   const jsonFallback = require("@/data/exerciseLibrary.json") as Exercise[];
-  const builtInExercises = (remoteExercises ?? dbExercises ?? jsonFallback) as Exercise[];
+  // Normalize fallback as well (if the JSON uses single string field)
+  const normalizedFallback = (jsonFallback as any[]).map((e) => {
+    const tm = (e as any).target_muscles ?? (e as any).target_muscle;
+    const tms = Array.isArray(tm) ? tm : (typeof tm === "string" ? [tm] : undefined);
+    return { ...e, target_muscles: tms } as Exercise;
+  });
+  const builtInExercises = (remoteExercises ?? (dbExercises as any) ?? normalizedFallback) as Exercise[];
 
   const exercises = [...builtInExercises, ...customExercises];
 

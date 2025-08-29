@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, Pressable, Image } from "react-nati
 import { useLocalSearchParams } from "expo-router";
 import { useExerciseStore } from "@/hooks/useExerciseStore";
 import { Exercise } from "@/types/workout";
-import { Dumbbell, Info } from "lucide-react-native";
+import { Dumbbell, Info, Target } from "lucide-react-native";
 
 export default function ExerciseDetailScreen() {
   const { exerciseId } = useLocalSearchParams();
@@ -50,6 +50,14 @@ export default function ExerciseDetailScreen() {
               <Info size={14} color="#e74c3c" />
               <Text style={styles.tagText}>{exercise.primary_muscle_group}</Text>
             </View>
+            {Array.isArray(exercise.target_muscles) && exercise.target_muscles.length > 0 && (
+              <View style={styles.tag}>
+                <Target size={14} color="#e74c3c" />
+                <Text style={styles.tagText} numberOfLines={1}>
+                  {exercise.target_muscles.join(", ")}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 

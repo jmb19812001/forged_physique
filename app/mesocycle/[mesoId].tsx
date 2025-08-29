@@ -93,6 +93,7 @@ export default function MesocycleDetailScreen() {
   }
 
   return (
+    <>
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <LinearGradient
         colors={["#2a2a2a", "#1e1e1e"]}
@@ -236,6 +237,7 @@ export default function MesocycleDetailScreen() {
       onConfirm={performDelete}
       onCancel={() => setConfirmVisible(false)}
     />
+    </>
   );
 }
 
@@ -419,4 +421,8 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
 });
+
+
+
+
 

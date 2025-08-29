@@ -3,6 +3,20 @@
 ## Overview
 Forged Physique is a full-stack mobile application for iOS and Android designed as a personalized hypertrophy training coach. The app guides users through structured training blocks (mesocycles), tracks detailed workout data, and employs an RIR-based autoregulation system to provide intelligent recommendations for progressive overload and recovery. It features a clean, minimalist, dark-themed UI.
 
+## Feature Status
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Onboarding & Auth | Functional | Email/password login, signup, logout, unit preference |
+| Exercise Catalog | Functional | Built-in and custom exercises with CRUD support |
+| Mesocycle Planner | Functional | Create, activate, and manage training blocks |
+| Workout Scheduler & Session | Functional | Generate workout days, log sets, complete sessions |
+| Progress Analytics | Stubbed | Charts and PRs use placeholder data |
+| Recommendation Engine | Stubbed | Simplified weight suggestion logic |
+| Admin Console | Stubbed | UI present; backend actions pending |
+| Backend API | Stubbed | tRPC/Hono router scaffolded without procedures |
+| Feedback Store | Planned | Persist and analyze muscle group feedback |
+
 ## Features
 
 ### Onboarding
@@ -87,9 +101,15 @@ An admin console is available under the "Admin" tab for managing user accounts, 
 - Some UI buttons (e.g., adding workout days, toggling exercises) are placeholders and require further backend integration.
 - Password reset functionality is under development.
 
+## Development Roadmap
+
+- **Feedback Store Agent** – Persist pain/pump/difficulty feedback for each muscle group and surface trends.
+- **Recommendation Engine Enhancements** – Use historical performance and feedback to drive set-by-set targets.
+- **Expanded Backend API** – Implement tRPC procedures for auth, exercises, mesocycles, workouts, and progress analytics.
+
 ## Contributing
 
-This project is under active development. For feature requests or bug reports, please contact the development team.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branching strategy, coding style, and pull request expectations.
 
 ## License
 

@@ -1,4 +1,5 @@
-import { Platform, InputAccessoryView, View, Text, Pressable, StyleSheet, Keyboard } from "react-native";
+import { Platform, InputAccessoryView, View, Text, StyleSheet, Keyboard } from "react-native";
+import { Button, ButtonText } from "@gluestack-ui/themed";
 
 export const ACCESSORY_ID = "globalAccessory";
 
@@ -7,9 +8,9 @@ export default function InputAccessoryBar() {
   return (
     <InputAccessoryView nativeID={ACCESSORY_ID} backgroundColor="#1a1a1a">
       <View style={styles.bar}>
-        <Pressable accessibilityLabel="Hide keyboard" onPress={() => Keyboard.dismiss()} style={styles.button}>
-          <Text style={styles.buttonText}>Hide Keyboard</Text>
-        </Pressable>
+        <Button accessibilityLabel="Hide keyboard" onPress={() => Keyboard.dismiss()} style={styles.button}>
+          <ButtonText style={styles.buttonText}>Hide Keyboard</ButtonText>
+        </Button>
       </View>
     </InputAccessoryView>
   );

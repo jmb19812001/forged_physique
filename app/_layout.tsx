@@ -12,6 +12,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { trpc, trpcClient } from "@/lib/trpc";
 import KeyboardDismissOverlay from "@/components/KeyboardDismissOverlay";
 import InputAccessoryBar from "@/components/InputAccessoryBar";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
+import { config } from "@/gluestack-theme";
 
 const queryClient = new QueryClient();
 
@@ -30,19 +32,21 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          <AppProvider>
-            <StatusBar style="light" />
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-            </Stack>
-            <KeyboardDismissOverlay />
-          </AppProvider>
-        </QueryClientProvider>
-      </trpc.Provider>
+      <GluestackUIProvider config={config}>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <AppProvider>
+              <StatusBar style="light" />
+              <Stack>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+              </Stack>
+              <KeyboardDismissOverlay />
+            </AppProvider>
+          </QueryClientProvider>
+        </trpc.Provider>
+      </GluestackUIProvider>
       <InputAccessoryBar />
     </GestureHandlerRootView>
   );

@@ -1,4 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { Button, ButtonText } from "@gluestack-ui/themed";
 
 type Props = {
   visible: boolean;
@@ -16,12 +17,12 @@ export default function ConfirmBar({ visible, message, confirmLabel = "Confirm",
       <View style={styles.bar}>
         <Text style={styles.message} numberOfLines={2}>{message}</Text>
         <View style={styles.buttons}>
-          <Pressable style={[styles.button, styles.cancel]} onPress={onCancel}>
-            <Text style={styles.buttonText}>{cancelLabel}</Text>
-          </Pressable>
-          <Pressable style={[styles.button, styles.confirm]} onPress={onConfirm}>
-            <Text style={styles.buttonText}>{confirmLabel}</Text>
-          </Pressable>
+          <Button style={[styles.button, styles.cancel]} onPress={onCancel}>
+            <ButtonText style={styles.buttonText}>{cancelLabel}</ButtonText>
+          </Button>
+          <Button style={[styles.button, styles.confirm]} onPress={onConfirm}>
+            <ButtonText style={styles.buttonText}>{confirmLabel}</ButtonText>
+          </Button>
         </View>
       </View>
     </View>

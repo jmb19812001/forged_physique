@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { Pressable, Button, ButtonText, Card } from "@gluestack-ui/themed";
 import { router } from "expo-router";
 import { useMesocycleStore } from "@/hooks/useMesocycleStore";
 import { MesoCycle } from "@/types/workout";
@@ -36,23 +37,23 @@ export default function MesocyclesScreen() {
             </Text>
             
             <View style={styles.buttonRow}>
-              <Pressable 
+              <Button
                 style={[styles.button, styles.presetButton]}
                 onPress={() => router.push("/mesocycle/create?type=preset")}
               >
-                <Text style={styles.buttonText}>Preset</Text>
-              </Pressable>
-              
-              <Pressable 
+                <ButtonText style={styles.buttonText}>Preset</ButtonText>
+              </Button>
+
+              <Button
                 style={[styles.button, styles.customButton]}
                 onPress={() => router.push("/mesocycle/create?type=custom")}
               >
-                <Text style={styles.buttonText}>Custom</Text>
-              </Pressable>
-              
-              <Pressable style={[styles.button, styles.copyButton]}>
-                <Text style={styles.buttonText}>Copy</Text>
-              </Pressable>
+                <ButtonText style={styles.buttonText}>Custom</ButtonText>
+              </Button>
+
+              <Button style={[styles.button, styles.copyButton]}>
+                <ButtonText style={styles.buttonText}>Copy</ButtonText>
+              </Button>
             </View>
           </View>
         </LinearGradient>
@@ -60,18 +61,19 @@ export default function MesocyclesScreen() {
         {activeMeso && (
           <View style={[styles.section, styles.maxWidth]}>
             <Text style={styles.sectionTitle}>Active Mesocycle</Text>
-            <Pressable 
-              style={styles.mesoCard}
+            <Pressable
               onPress={() => router.push(`/mesocycle/${activeMeso.meso_id}`)}
             >
-              <View style={styles.mesoCardLeft}>
-                <View style={styles.activeBadge}>
-                  <Text style={styles.activeBadgeText}>ACTIVE</Text>
+              <Card style={styles.mesoCard}>
+                <View style={styles.mesoCardLeft}>
+                  <View style={styles.activeBadge}>
+                    <Text style={styles.activeBadgeText}>ACTIVE</Text>
+                  </View>
+                  <Text style={styles.mesoCardTitle}>{activeMeso.meso_name}</Text>
+                  <Text style={styles.mesoCardSubtitle}>Week 2 of {activeMeso.duration_weeks}</Text>
                 </View>
-                <Text style={styles.mesoCardTitle}>{activeMeso.meso_name}</Text>
-                <Text style={styles.mesoCardSubtitle}>Week 2 of {activeMeso.duration_weeks}</Text>
-              </View>
-              <ChevronRight size={20} color="#888" />
+                <ChevronRight size={20} color="#888" />
+              </Card>
             </Pressable>
           </View>
         )}
@@ -80,23 +82,24 @@ export default function MesocyclesScreen() {
           <View style={[styles.section, styles.maxWidth]}>
             <Text style={styles.sectionTitle}>All Mesocycles</Text>
             {mesocycles.map((meso) => (
-              <Pressable 
+              <Pressable
                 key={meso.meso_id}
-                style={styles.mesoCard}
                 onPress={() => router.push(`/mesocycle/${meso.meso_id}`)}
               >
-                <View style={styles.mesoCardLeft}>
-                  {meso.is_active && (
-                    <View style={styles.activeBadge}>
-                      <Text style={styles.activeBadgeText}>ACTIVE</Text>
-                    </View>
-                  )}
-                  <Text style={styles.mesoCardTitle}>{meso.meso_name}</Text>
-                  <Text style={styles.mesoCardSubtitle}>
-                    {meso.is_active ? `Week 2 of ${meso.duration_weeks}` : `${meso.duration_weeks} weeks`}
-                  </Text>
-                </View>
-                <ChevronRight size={20} color="#888" />
+                <Card style={styles.mesoCard}>
+                  <View style={styles.mesoCardLeft}>
+                    {meso.is_active && (
+                      <View style={styles.activeBadge}>
+                        <Text style={styles.activeBadgeText}>ACTIVE</Text>
+                      </View>
+                    )}
+                    <Text style={styles.mesoCardTitle}>{meso.meso_name}</Text>
+                    <Text style={styles.mesoCardSubtitle}>
+                      {meso.is_active ? `Week 2 of ${meso.duration_weeks}` : `${meso.duration_weeks} weeks`}
+                    </Text>
+                  </View>
+                  <ChevronRight size={20} color="#888" />
+                </Card>
               </Pressable>
             ))}
           </View>
@@ -109,13 +112,13 @@ export default function MesocyclesScreen() {
             <Text style={styles.emptyStateText}>
               Create your first training block to get started
             </Text>
-            <Pressable 
+            <Button
               style={styles.createButton}
               onPress={() => router.push("/mesocycle/create")}
             >
               <Plus size={20} color="#fff" />
-              <Text style={styles.createButtonText}>CREATE MESOCYCLE</Text>
-            </Pressable>
+              <ButtonText style={styles.createButtonText}>CREATE MESOCYCLE</ButtonText>
+            </Button>
           </View>
         )}
       </ScrollView>

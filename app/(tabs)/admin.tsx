@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput, Modal } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Alert, Modal } from "react-native";
+import { Pressable, Button, ButtonText, Input, InputField, Card } from "@gluestack-ui/themed";
 import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 import { useAuth } from "@/hooks/useAuth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -89,18 +90,19 @@ export default function AdminConsoleScreen() {
           <Text style={styles.sectionTitle}>Users</Text>
           {users.length > 0 ? (
             users.map((u) => (
-              <Pressable 
-                key={u.user_id} 
-                style={styles.userCard}
+              <Pressable
+                key={u.user_id}
                 onPress={() => handleViewUser(u)}
               >
-                <View style={styles.userAvatar}>
-                  <UserIcon size={30} color="#fff" />
-                </View>
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{u.user_name}</Text>
-                  <Text style={styles.userEmail}>{u.email}</Text>
-                </View>
+                <Card style={styles.userCard}>
+                  <View style={styles.userAvatar}>
+                    <UserIcon size={30} color="#fff" />
+                  </View>
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{u.user_name}</Text>
+                    <Text style={styles.userEmail}>{u.email}</Text>
+                  </View>
+                </Card>
               </Pressable>
             ))
           ) : (
@@ -117,22 +119,22 @@ export default function AdminConsoleScreen() {
           animationType="slide"
         >
           <View style={styles.modalOverlay}>
-            <View style={styles.resetModal}>
+            <Card style={styles.resetModal}>
               <Text style={styles.resetTitle}>Reset Password for {selectedUser.user_name}</Text>
               <View style={styles.inputContainer}>
                 <Lock size={20} color="#888" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="New Password"
-                  placeholderTextColor="#888"
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  secureTextEntry
-                  inputAccessoryViewID={ACCESSORY_ID}
-                />
+                <Input style={styles.input} inputAccessoryViewID={ACCESSORY_ID}>
+                  <InputField
+                    placeholder="New Password"
+                    placeholderTextColor="#888"
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    secureTextEntry
+                  />
+                </Input>
               </View>
               <View style={styles.modalButtons}>
-                <Pressable 
+                <Button
                   style={styles.cancelButton}
                   onPress={() => {
                     setResetPasswordModalVisible(false);
@@ -140,16 +142,16 @@ export default function AdminConsoleScreen() {
                     setNewPassword("");
                   }}
                 >
-                  <Text style={styles.cancelButtonText}>CANCEL</Text>
-                </Pressable>
-                <Pressable 
+                  <ButtonText style={styles.cancelButtonText}>CANCEL</ButtonText>
+                </Button>
+                <Button
                   style={styles.sendButton}
                   onPress={handleResetPassword}
                 >
-                  <Text style={styles.sendButtonText}>RESET</Text>
-                </Pressable>
+                  <ButtonText style={styles.sendButtonText}>RESET</ButtonText>
+                </Button>
               </View>
-            </View>
+            </Card>
           </View>
         </Modal>
       )}

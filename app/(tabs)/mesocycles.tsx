@@ -5,16 +5,32 @@ import { useMesocycleStore } from "@/hooks/useMesocycleStore";
 import { MesoCycle } from "@/types/workout";
 import { Calendar, ChevronRight, Plus } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function MesocyclesScreen() {
-  const { mesocycles, getActiveMesocycle } = useMesocycleStore();
+  const local = useMesocycleStore();
+  const { user } = useAuth();
+  const { data: serverList } = trpc.mesocycles.list.useQuery(
+    user ? { user_id: user.user_id } : (undefined as any),
+    { enabled: !!user }
+  );
+
+  // Normalize server rows to MesoCycle shape (is_active: boolean)
+  const mesocycles: MesoCycle[] = (serverList?.map((m: any) => ({
+    meso_id: m.meso_id,
+    user_id: m.user_id,
+    meso_name: m.meso_name,
+    start_date: m.start_date,
+    duration_weeks: m.duration_weeks,
+    is_active: !!m.is_active,
+  })) ?? local.mesocycles) as MesoCycle[];
+
   const [activeMeso, setActiveMeso] = useState<MesoCycle | null>(null);
 
   useEffect(() => {
-    const active = getActiveMesocycle();
-    if (active) {
-      setActiveMeso(active);
-    }
+    const active = mesocycles.find(m => m.is_active) || null;
+    setActiveMeso(active);
   }, [mesocycles]);
 
   return (

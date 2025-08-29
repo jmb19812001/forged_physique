@@ -9,7 +9,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import SelectField from "@/components/SelectField";
 import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
 import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// Removed local draft persistence; using server-backed drafts via tRPC
+import { useAuth } from "@/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 
 export default function CreateMesocycleScreen() {
   const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string, type?: string}>();
@@ -30,33 +32,45 @@ export default function CreateMesocycleScreen() {
     { dayName: "Friday", enabled: true, muscleGroups: [], exercise_ids: [] },
   ]);
   const [draftLoaded, setDraftLoaded] = useState(false);
+  const [serverDraftApplied, setServerDraftApplied] = useState(false);
+  const { user } = useAuth();
+
+  // Server draft hooks
+  const draftsGet = trpc.drafts.get.useQuery(
+    user ? { user_id: user.user_id } : (undefined as any),
+    { enabled: !!user }
+  );
+  const draftsSet = trpc.drafts.set.useMutation();
+  const draftsClear = trpc.drafts.clear.useMutation();
+  const mesoCreate = trpc.mesocycles.create.useMutation();
+  const saveDays = trpc.workoutDays.saveForMesocycle.useMutation();
   
   const muscleGroups = getMuscleGroups();
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
-  const DRAFT_KEY = "meso_create_draft";
+  // No local draft load
 
-  // Load draft on mount
+  // Load server draft once (or mark loaded if none)
   useEffect(() => {
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(DRAFT_KEY);
-        if (raw) {
-          const draft = JSON.parse(raw);
-          if (Array.isArray(draft.workoutDays)) setWorkoutDays(draft.workoutDays);
-          if (typeof draft.mesoName === "string") setMesoName(draft.mesoName);
-          if (typeof draft.durationWeeks === "string") setDurationWeeks(draft.durationWeeks);
-          if (typeof draft.daysPerWeek === "string") setDaysPerWeek(draft.daysPerWeek);
-          if (typeof draft.startDay === "string") setStartDay(draft.startDay);
-          if (typeof draft.selectedPreset === "string") setSelectedPreset(draft.selectedPreset);
-          if (draft.sex === "male" || draft.sex === "female") setSex(draft.sex);
-        }
-      } catch {}
-      finally {
-        setDraftLoaded(true);
+    if (!user) return;
+    if (serverDraftApplied) return;
+    const row = draftsGet.data;
+    if (!draftsGet.isFetched) return;
+    try {
+      if (row) {
+        const draft = JSON.parse(row.draft);
+        if (Array.isArray(draft.workoutDays)) setWorkoutDays(draft.workoutDays);
+        if (typeof draft.mesoName === "string") setMesoName(draft.mesoName);
+        if (typeof draft.durationWeeks === "string") setDurationWeeks(draft.durationWeeks);
+        if (typeof draft.daysPerWeek === "string") setDaysPerWeek(draft.daysPerWeek);
+        if (typeof draft.startDay === "string") setStartDay(draft.startDay);
+        if (typeof draft.selectedPreset === "string") setSelectedPreset(draft.selectedPreset);
+        if (draft.sex === "male" || draft.sex === "female") setSex(draft.sex);
       }
-    })();
-  }, []);
+      setServerDraftApplied(true);
+      setDraftLoaded(true);
+    } catch {}
+  }, [user, draftsGet.data, draftsGet.isFetched, serverDraftApplied]);
 
   const getSuggestedName = (base: string) => {
     const existing = mesocycles
@@ -110,7 +124,7 @@ export default function CreateMesocycleScreen() {
     }));
   }, [muscleGroups.join(',')]);
 
-  // Persist draft when key fields change (after initial load)
+  // Persist draft to server when key fields change (after initial load)
   useEffect(() => {
     if (!draftLoaded) return;
     const draft = {
@@ -122,7 +136,9 @@ export default function CreateMesocycleScreen() {
       selectedPreset,
       sex,
     };
-    AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft)).catch(() => {});
+    if (user) {
+      draftsSet.mutate({ user_id: user.user_id, draft });
+    }
   }, [draftLoaded, workoutDays, mesoName, durationWeeks, daysPerWeek, startDay, selectedPreset, sex]);
 
   // Apply selection returned from the exercise screen AFTER draft has loaded
@@ -153,13 +169,34 @@ export default function CreateMesocycleScreen() {
         preset: type === "preset" ? selectedPreset : undefined,
       };
       
+      // Keep local store updated for now
       const newMesocycle = await createMesocycle(params);
+      // Save to server as well
+      if (user) {
+        const serverMeso = await mesoCreate.mutateAsync({
+          user_id: user.user_id,
+          meso_name: params.meso_name,
+          duration_weeks: params.duration_weeks,
+          start_date: new Date().toISOString(),
+        });
+        // Map workoutDays to server format
+        const dayIndex = (name: string) => daysOfWeek.indexOf(name as any) + 1;
+        const daysPayload = (workoutDays || []).map(d => ({
+          // omit day_id to let backend assign UUIDs
+          day_name: d.dayName,
+          day_of_week: dayIndex(d.dayName),
+          exercise_ids: d.exercise_ids || [],
+        }));
+        await saveDays.mutateAsync({ meso_id: serverMeso.meso_id, days: daysPayload });
+        // Clear server draft
+        await draftsClear.mutateAsync({ user_id: user.user_id });
+      }
       
       // Create workout days for the new mesocycle
       await createWorkoutDaysForMesocycle(newMesocycle, workoutDays, params);
       
-      // Clear draft after successful creation
-      try { await AsyncStorage.removeItem(DRAFT_KEY); } catch {}
+      // Clear server draft after successful creation
+      if (user) { try { await draftsClear.mutateAsync({ user_id: user.user_id }); } catch {} }
 
       Alert.alert(
         "Success",

@@ -6,7 +6,7 @@ import { db } from "./db";
 import { users, exercises } from "./schema";
 
 async function main() {
-  console.log("Seeding database...");
+  console.log("Seeding database from data/exerciseLibrary.json...");
 
   // Seed a demo user
   const demoUserId = `user_${Math.random().toString(36).slice(2, 10)}`;
@@ -21,8 +21,7 @@ async function main() {
   // Load exercise library from JSON
   const jsonPath = path.resolve(process.cwd(), "data", "exerciseLibrary.json");
   const library = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as Array<any>;
-  const seedList = library; // seed all entries
-  for (const ex of seedList) {
+  for (const ex of library) {
     await db.insert(exercises).values({
       exercise_id: ex.exercise_id,
       name: ex.name,
@@ -34,7 +33,7 @@ async function main() {
     }).onConflictDoNothing?.();
   }
 
-  console.log(`Seeded ${seedList.length} exercises and demo user ${demoUserId}`);
+  console.log(`Seeded ${library.length} exercises and demo user ${demoUserId}`);
 }
 
 main().then(() => process.exit(0)).catch((err) => {

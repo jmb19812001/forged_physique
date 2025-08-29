@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Exercise, SetLog, WorkoutDay } from "@/types/workout";
 import { ChevronDown, ChevronUp, Info, Plus } from "lucide-react-native";
 import * as Haptics from 'expo-haptics';
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 
 export default function WorkoutScreen() {
   const { dayId } = useLocalSearchParams();
@@ -270,6 +271,7 @@ export default function WorkoutScreen() {
                           placeholder="0"
                           placeholderTextColor="#666"
                           editable={!set.completed}
+                          inputAccessoryViewID={ACCESSORY_ID}
                         />
                         <Text style={styles.unitText}>
                           {user?.unit_preference || "lbs"}
@@ -290,6 +292,7 @@ export default function WorkoutScreen() {
                           placeholder="0"
                           placeholderTextColor="#666"
                           editable={!set.completed}
+                          inputAccessoryViewID={ACCESSORY_ID}
                         />
                       </View>
                       
@@ -307,6 +310,7 @@ export default function WorkoutScreen() {
                           placeholder="2"
                           placeholderTextColor="#666"
                           editable={!set.completed}
+                          inputAccessoryViewID={ACCESSORY_ID}
                         />
                       </View>
                       

@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Lock, Mail } from "lucide-react-native";
 import { useRef, useState } from "react";
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -82,6 +83,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             returnKeyType="next"
             onSubmitEditing={() => passwordInputRef.current?.focus()}
+            inputAccessoryViewID={ACCESSORY_ID}
           />
         </View>
         
@@ -97,6 +99,7 @@ export default function LoginScreen() {
             secureTextEntry
             returnKeyType="done"
             onSubmitEditing={handleLogin}
+            inputAccessoryViewID={ACCESSORY_ID}
           />
         </View>
         
@@ -141,6 +144,7 @@ export default function LoginScreen() {
                 onChangeText={setResetEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
+                inputAccessoryViewID={ACCESSORY_ID}
               />
             </View>
             <View style={styles.modalButtons}>

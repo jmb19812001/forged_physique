@@ -19,15 +19,15 @@ export default function MesocyclesScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.header}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={[styles.header, styles.maxWidth]}>
           <Text style={styles.title}>Mesocycles</Text>
           <Text style={styles.subtitle}>Plan and track your training blocks</Text>
         </View>
 
         <LinearGradient
           colors={["#2a2a2a", "#1e1e1e"]}
-          style={styles.createCard}
+          style={[styles.createCard, styles.maxWidth]}
         >
           <View style={styles.createCardContent}>
             <Text style={styles.createCardTitle}>Plan a mesocycle</Text>
@@ -58,7 +58,7 @@ export default function MesocyclesScreen() {
         </LinearGradient>
 
         {activeMeso && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.maxWidth]}>
             <Text style={styles.sectionTitle}>Active Mesocycle</Text>
             <Pressable 
               style={styles.mesoCard}
@@ -77,7 +77,7 @@ export default function MesocyclesScreen() {
         )}
 
         {mesocycles.length > 0 && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.maxWidth]}>
             <Text style={styles.sectionTitle}>All Mesocycles</Text>
             {mesocycles.map((meso) => (
               <Pressable 
@@ -103,7 +103,7 @@ export default function MesocyclesScreen() {
         )}
 
         {mesocycles.length === 0 && (
-          <View style={styles.emptyState}>
+          <View style={[styles.emptyState, styles.maxWidth] }>
             <Calendar size={60} color="#888" />
             <Text style={styles.emptyStateTitle}>No Mesocycles Yet</Text>
             <Text style={styles.emptyStateText}>
@@ -127,6 +127,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212",
+  },
+  scrollContent: {
+    paddingBottom: 24,
+  },
+  maxWidth: {
+    width: "100%",
+    maxWidth: 1100,
+    alignSelf: "center",
   },
   header: {
     padding: 20,

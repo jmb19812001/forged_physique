@@ -9,6 +9,8 @@ import { AppProvider } from "@/context/AppContext";
 import { StatusBar } from "expo-status-bar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { trpc, trpcClient } from "@/lib/trpc";
+import KeyboardDismissOverlay from "@/components/KeyboardDismissOverlay";
+import InputAccessoryBar from "@/components/InputAccessoryBar";
 
 const queryClient = new QueryClient();
 
@@ -24,9 +26,11 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="modal" options={{ presentation: "modal" }} />
             </Stack>
+            <KeyboardDismissOverlay />
           </AppProvider>
         </QueryClientProvider>
       </trpc.Provider>
+      <InputAccessoryBar />
     </GestureHandlerRootView>
   );
 }

@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Switch, Alert } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Switch, Alert, Keyboard, useWindowDimensions } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useMesocycleStore } from "@/hooks/useMesocycleStore";
 import { useExerciseStore } from "@/hooks/useExerciseStore";
 import { useWorkoutStore } from "@/hooks/useWorkoutStore";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import SelectField from "@/components/SelectField";
+import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 
 export default function CreateMesocycleScreen() {
   const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string, type?: string}>();
@@ -18,7 +21,8 @@ export default function CreateMesocycleScreen() {
   const [sex, setSex] = useState<"male" | "female">("male");
   const [daysPerWeek, setDaysPerWeek] = useState("3");
   const [startDay, setStartDay] = useState("Monday");
-  const [selectedPreset, setSelectedPreset] = useState("Full Body 3x");
+  const templateNames = defaultWorkoutTemplates.map(t => t.name);
+  const [selectedPreset, setSelectedPreset] = useState(templateNames[0] || "");
   const [workoutDays, setWorkoutDays] = useState<{ dayName: string, enabled: boolean, muscleGroups: { name: string, enabled: boolean }[], exercise_ids: string[] }[]>([
     { dayName: "Monday", enabled: true, muscleGroups: [], exercise_ids: [] },
     { dayName: "Wednesday", enabled: true, muscleGroups: [], exercise_ids: [] },
@@ -123,11 +127,14 @@ export default function CreateMesocycleScreen() {
     setDaysPerWeek((parseInt(daysPerWeek) + 1).toString());
   };
 
+  const { width } = useWindowDimensions();
+  const isWide = width >= 900;
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <LinearGradient
         colors={["#2a2a2a", "#1e1e1e"]}
-        style={styles.header}
+        style={[styles.header, styles.maxWidth]}
       >
         <Text style={styles.title}>Plan a mesocycle</Text>
         <Text style={styles.subtitle}>
@@ -167,14 +174,14 @@ export default function CreateMesocycleScreen() {
         </View>
       </LinearGradient>
 
-      <View style={styles.formSection}>
+      <View style={[styles.formSection, styles.maxWidth]}>
         <Text style={styles.sectionTitle}>
           {type === "preset" ? "Preset meso" : "Custom meso"}
         </Text>
-        
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>What is your sex?</Text>
-          <View style={styles.sexToggleContainer}>
+        <View style={[styles.formGrid, isWide ? styles.formGridWide : undefined]}>
+          <View style={[styles.inputContainer, isWide && styles.gridItem]}>
+            <Text style={styles.inputLabel}>What is your sex?</Text>
+            <View style={styles.sexToggleContainer}>
             <Pressable 
               style={[
                 styles.sexToggleButton,
@@ -200,29 +207,31 @@ export default function CreateMesocycleScreen() {
                 sex === "female" && styles.activeSexToggleText
               ]}>FEMALE</Text>
             </Pressable>
+            </View>
           </View>
-        </View>
-        
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>What day of the week will you begin your meso?</Text>
-          <Pressable style={styles.dropdown}>
-            <Text style={styles.dropdownText}>{startDay}</Text>
-            <ChevronDown size={20} color="#888" />
-          </Pressable>
-        </View>
-        
-        {type === "preset" && (
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Preset</Text>
-            <Pressable style={styles.dropdown}>
-              <Text style={styles.dropdownText}>{selectedPreset}</Text>
-              <ChevronDown size={20} color="#888" />
-            </Pressable>
+
+          <View style={[styles.inputContainer, isWide && styles.gridItem]}>
+            <SelectField
+              label="What day of the week will you begin your meso?"
+              value={startDay}
+              options={["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]}
+              onSelect={setStartDay}
+            />
           </View>
-        )}
+
+          {type === "preset" && (
+            <View style={[styles.inputContainer, isWide && styles.gridItem]}>
+              <SelectField
+                label="Preset"
+                value={selectedPreset}
+                options={templateNames}
+                onSelect={setSelectedPreset}
+              />
+            </View>
+          )}
         
-        {type === "custom" && (
-          <View style={styles.inputContainer}>
+          {type === "custom" && (
+          <View style={[styles.inputContainer, isWide && styles.gridItem]}>
             <Text style={styles.inputLabel}>How many days per week?</Text>
             <TextInput
               style={styles.input}
@@ -231,36 +240,49 @@ export default function CreateMesocycleScreen() {
               keyboardType="numeric"
               placeholder="3"
               placeholderTextColor="#888"
+              returnKeyType="done"
+              blurOnSubmit
+              onSubmitEditing={() => Keyboard.dismiss()}
+              inputAccessoryViewID={ACCESSORY_ID}
             />
           </View>
         )}
         
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Mesocycle Name</Text>
-          <TextInput
-            style={styles.input}
-            value={mesoName}
-            onChangeText={setMesoName}
-            placeholder="My 5-Day Split"
-            placeholderTextColor="#888"
-          />
-        </View>
+          <View style={[styles.inputContainer, isWide && styles.gridItem]}>
+            <Text style={styles.inputLabel}>Mesocycle Name</Text>
+            <TextInput
+              style={styles.input}
+              value={mesoName}
+              onChangeText={setMesoName}
+              placeholder="My 5-Day Split"
+              placeholderTextColor="#888"
+              returnKeyType="done"
+              blurOnSubmit
+              onSubmitEditing={() => Keyboard.dismiss()}
+              inputAccessoryViewID={ACCESSORY_ID}
+            />
+          </View>
         
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Duration (weeks)</Text>
-          <TextInput
-            style={styles.input}
-            value={durationWeeks}
-            onChangeText={setDurationWeeks}
-            keyboardType="numeric"
-            placeholder="4"
-            placeholderTextColor="#888"
-          />
+          <View style={[styles.inputContainer, isWide && styles.gridItem]}>
+            <Text style={styles.inputLabel}>Duration (weeks)</Text>
+            <TextInput
+              style={styles.input}
+              value={durationWeeks}
+              onChangeText={setDurationWeeks}
+              keyboardType="numeric"
+              placeholder="4"
+              placeholderTextColor="#888"
+              returnKeyType="done"
+              blurOnSubmit
+              onSubmitEditing={() => Keyboard.dismiss()}
+              inputAccessoryViewID={ACCESSORY_ID}
+            />
+          </View>
         </View>
       </View>
 
       {type === "custom" && (
-        <View style={styles.formSection}>
+        <View style={[styles.formSection, styles.maxWidth]}>
           <Text style={styles.sectionTitle}>Workout Days</Text>
           
           {workoutDays.map((day, dayIndex) => (
@@ -350,8 +372,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121212",
   },
+  scrollContent: {
+    paddingBottom: 24,
+  },
   header: {
     padding: 20,
+  },
+  maxWidth: {
+    width: "100%",
+    maxWidth: 1100,
+    alignSelf: "center",
   },
   title: {
     fontSize: 24,
@@ -387,6 +417,17 @@ const styles = StyleSheet.create({
   },
   formSection: {
     padding: 20,
+  },
+  formGrid: {
+    gap: 20,
+  },
+  formGridWide: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  gridItem: {
+    width: "48%",
   },
   sectionTitle: {
     fontSize: 18,

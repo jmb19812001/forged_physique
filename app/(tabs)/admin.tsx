@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput, Modal } from "react-native";
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 import { useAuth } from "@/hooks/useAuth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from "@/types/workout";
@@ -127,6 +128,7 @@ export default function AdminConsoleScreen() {
                   value={newPassword}
                   onChangeText={setNewPassword}
                   secureTextEntry
+                  inputAccessoryViewID={ACCESSORY_ID}
                 />
               </View>
               <View style={styles.modalButtons}>

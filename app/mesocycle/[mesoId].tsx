@@ -69,10 +69,10 @@ export default function MesocycleDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <LinearGradient
         colors={["#2a2a2a", "#1e1e1e"]}
-        style={styles.header}
+        style={[styles.header, styles.maxWidth]}
       >
         <View style={styles.headerContent}>
           {mesocycle.is_active && (
@@ -104,7 +104,7 @@ export default function MesocycleDetailScreen() {
         </View>
       </LinearGradient>
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.maxWidth]}>
         <Text style={styles.sectionTitle}>Workout Days</Text>
         
         {workoutDays.map((day) => (
@@ -131,7 +131,7 @@ export default function MesocycleDetailScreen() {
         )}
       </View>
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.maxWidth]}>
         <Text style={styles.sectionTitle}>Deload Week</Text>
         <View style={styles.deloadCard}>
           <Text style={styles.deloadText}>
@@ -141,7 +141,7 @@ export default function MesocycleDetailScreen() {
         </View>
       </View>
 
-      <View style={styles.actionButtons}>
+      <View style={[styles.actionButtons, styles.maxWidth]}>
         <Pressable 
           style={[styles.actionButton, styles.editButton]}
           onPress={() => {}}
@@ -167,10 +167,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121212",
   },
+  scrollContent: {
+    paddingBottom: 24,
+  },
   header: {
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     overflow: "hidden",
+  },
+  maxWidth: {
+    width: "100%",
+    maxWidth: 1100,
+    alignSelf: "center",
   },
   headerContent: {
     padding: 20,

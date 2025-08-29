@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Alert } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Alert, Keyboard } from "react-native";
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 import { useLocalSearchParams, router } from "expo-router";
 import { useExerciseStore } from "@/hooks/useExerciseStore";
 import { Exercise } from "@/types/workout";
@@ -78,6 +79,9 @@ export default function ExerciseFormScreen() {
           onChangeText={setName}
           placeholder="e.g., Bench Press"
           placeholderTextColor="#888"
+          returnKeyType="done"
+          onSubmitEditing={Keyboard.dismiss}
+          inputAccessoryViewID={ACCESSORY_ID}
         />
 
         <Text style={styles.label}>Primary Muscle Group</Text>
@@ -101,6 +105,9 @@ export default function ExerciseFormScreen() {
           onChangeText={setEquipment}
           placeholder="e.g., Barbell"
           placeholderTextColor="#888"
+          returnKeyType="done"
+          onSubmitEditing={Keyboard.dismiss}
+          inputAccessoryViewID={ACCESSORY_ID}
         />
 
         <Text style={styles.label}>Instructions</Text>
@@ -111,6 +118,9 @@ export default function ExerciseFormScreen() {
           placeholder="Enter instructions..."
           placeholderTextColor="#888"
           multiline
+          returnKeyType="done"
+          onSubmitEditing={Keyboard.dismiss}
+          inputAccessoryViewID={ACCESSORY_ID}
         />
 
         <Text style={styles.label}>Video URL (Optional)</Text>
@@ -120,6 +130,9 @@ export default function ExerciseFormScreen() {
           onChangeText={setVideoUrl}
           placeholder="https://example.com/video.mp4"
           placeholderTextColor="#888"
+          returnKeyType="done"
+          onSubmitEditing={Keyboard.dismiss}
+          inputAccessoryViewID={ACCESSORY_ID}
         />
 
         <Pressable style={styles.submitButton} onPress={handleSubmit}>

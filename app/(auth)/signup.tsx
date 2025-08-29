@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, Pressable, Image, TouchableWithoutFe
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/useAuth";
 import { LinearGradient } from "expo-linear-gradient";
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 import { Lock, Mail, User } from "lucide-react-native";
 
 export default function SignupScreen() {
@@ -59,6 +60,7 @@ export default function SignupScreen() {
             onChangeText={setUserName}
             returnKeyType="next"
             onSubmitEditing={() => emailInputRef.current?.focus()}
+            inputAccessoryViewID={ACCESSORY_ID}
           />
         </View>
         
@@ -75,6 +77,7 @@ export default function SignupScreen() {
             keyboardType="email-address"
             returnKeyType="next"
             onSubmitEditing={() => passwordInputRef.current?.focus()}
+            inputAccessoryViewID={ACCESSORY_ID}
           />
         </View>
         
@@ -90,6 +93,7 @@ export default function SignupScreen() {
             secureTextEntry
             returnKeyType="done"
             onSubmitEditing={handleSignup}
+            inputAccessoryViewID={ACCESSORY_ID}
           />
         </View>
         

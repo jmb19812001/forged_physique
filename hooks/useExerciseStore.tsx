@@ -54,20 +54,16 @@ export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseCo
         else if (typeof tm === "string") {
           try { tms = JSON.parse(tm); } catch {}
         }
-        return { ...e, target_muscles: tms } as Exercise;
+        // derive colloquial targets if missing
+        const derived = tms && tms.length > 0 ? tms : deriveColloquialTargets(e as Exercise);
+        return { ...(e as Exercise), target_muscles: derived } as Exercise;
       });
       setRemoteExercises(normalized);
     }
   }, [dbExercises]);
 
-  const jsonFallback = require("@/data/exerciseLibrary.json") as Exercise[];
-  // Normalize fallback as well (if the JSON uses single string field)
-  const normalizedFallback = (jsonFallback as any[]).map((e) => {
-    const tm = (e as any).target_muscles ?? (e as any).target_muscle;
-    const tms = Array.isArray(tm) ? tm : (typeof tm === "string" ? [tm] : undefined);
-    return { ...e, target_muscles: tms } as Exercise;
-  });
-  const builtInExercises = (remoteExercises ?? (dbExercises as any) ?? normalizedFallback) as Exercise[];
+  // Build from DB when available; otherwise show none (rely on custom exercises)
+  const builtInExercises = (remoteExercises ?? ([] as Exercise[]));
 
   const exercises = [...builtInExercises, ...customExercises];
 
@@ -119,4 +115,66 @@ export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseCo
     editCustomExercise,
     deleteCustomExercise,
   };
+
+  function deriveColloquialTargets(ex: Exercise): string[] {
+    const name = (ex.name || "").toLowerCase();
+    const group = (ex.primary_muscle_group || "").toLowerCase();
+
+    // Chest variants
+    if (group === "chest") {
+      if (name.includes("incline")) return ["upper chest", "front delts"];
+      if (name.includes("decline")) return ["lower chest", "triceps"];
+      if (name.includes("fly")) return ["inner chest"];
+      if (name.includes("push-up") || name.includes("push up")) return ["chest", "triceps"];
+      return ["chest", "triceps"]; // bench, machine press, etc.
+    }
+
+    // Back variants
+    if (group === "back") {
+      if (name.includes("lat pull") || name.includes("pulldown")) return ["lats"];
+      if (name.includes("pull-up") || name.includes("pull up")) return ["lats", "biceps"];
+      if (name.includes("chin-up") || name.includes("chin up")) return ["lats", "biceps"];
+      if (name.includes("row") || name.includes("pendlay")) return ["mid-back", "lats"];
+      if (name.includes("face pull")) return ["rear delts", "upper back"];
+      if (name.includes("shrug")) return ["traps"];
+      return ["lats", "mid-back"];
+    }
+
+    // Shoulders
+    if (group === "shoulders" || group === "shoulder") {
+      if (name.includes("lateral")) return ["side delts"];
+      if (name.includes("rear") || name.includes("reverse fly") || name.includes("rear delt")) return ["rear delts"];
+      if (name.includes("front raise")) return ["front delts"];
+      if (name.includes("press")) return ["front delts", "triceps"];
+      return ["delts"]; // generic
+    }
+
+    // Arms
+    if (group === "arms" || group === "arm") {
+      if (name.includes("curl")) return ["biceps"];
+      if (name.includes("hammer")) return ["biceps", "forearms"];
+      if (name.includes("pushdown") || name.includes("pressdown")) return ["triceps"];
+      if (name.includes("skull") || name.includes("overhead")) return ["triceps"];
+      return ["biceps", "triceps"]; // generic arms
+    }
+
+    // Legs
+    if (group === "legs" || group === "leg") {
+      if (name.includes("romanian") || name.includes("rdl")) return ["hamstrings", "glutes"];
+      if (name.includes("deadlift")) return ["hamstrings", "glutes", "lower back"];
+      if (name.includes("squat")) return ["quads", "glutes"];
+      if (name.includes("hack squat")) return ["quads"];
+      if (name.includes("goblet")) return ["quads"];
+      if (name.includes("leg press")) return ["quads", "glutes"];
+      if (name.includes("extension")) return ["quads"];
+      if (name.includes("curl")) return ["hamstrings"];
+      if (name.includes("calf")) return ["calves"];
+      if (name.includes("lunge")) return ["quads", "glutes"];
+      return ["quads", "glutes"]; // generic legs
+    }
+
+    // Default: fall back to primary group
+    if (group) return [group];
+    return [];
+  }
 });

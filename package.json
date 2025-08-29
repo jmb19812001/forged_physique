@@ -53,6 +53,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "ts:check": "tsc",
-    "backend": "tsx backend/server.ts"
+    "backend": "tsx backend/server.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:apply": "tsx backend/applyMigrations.ts",
+    "db:seed": "tsx backend/seed.ts"
   }
 }

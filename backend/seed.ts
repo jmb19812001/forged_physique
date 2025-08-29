@@ -1,7 +1,9 @@
-import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 import { db } from "./db";
 import { users, exercises } from "./schema";
-import { defaultExercises } from "../data/exercises";
 
 async function main() {
   console.log("Seeding database...");
@@ -16,8 +18,10 @@ async function main() {
     unit_preference: "lbs",
   }).onConflictDoNothing?.();
 
-  // Seed a subset of exercises to keep it light
-  const seedList = defaultExercises.slice(0, 25);
+  // Load exercise library from JSON
+  const jsonPath = path.resolve(process.cwd(), "data", "exerciseLibrary.json");
+  const library = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as Array<any>;
+  const seedList = library; // seed all entries
   for (const ex of seedList) {
     await db.insert(exercises).values({
       exercise_id: ex.exercise_id,
@@ -37,4 +41,3 @@ main().then(() => process.exit(0)).catch((err) => {
   console.error("Seeding failed:", err);
   process.exit(1);
 });
-

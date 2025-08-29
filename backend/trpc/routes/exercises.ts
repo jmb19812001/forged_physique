@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./create-context";
-import { exercises } from "../../db";
+import { exercises } from "../../schema";
 
 export const exercisesRouter = createTRPCRouter({
   list: publicProcedure.query(async ({ ctx }) => {

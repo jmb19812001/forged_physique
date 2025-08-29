@@ -5,6 +5,7 @@ import { MesoCycle, MesocycleCreateParams, SetLog, WorkoutDay, WorkoutSession, W
 import { useAuth } from "@/hooks/useAuth";
 import { generateId } from "@/utils/helpers";
 import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
+import { useExerciseStore } from "@/hooks/useExerciseStore";
 
 interface WorkoutContextType {
   workoutDays: WorkoutDay[];
@@ -26,6 +27,7 @@ export const [WorkoutProvider, useWorkoutStore] = createContextHook<WorkoutConte
   const [setLogs, setSetLogs] = useState<SetLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
+  const { getExercisesByMuscleGroup: getExercisesByMuscleGroupFromStore } = useExerciseStore();
 
   useEffect(() => {
     // Load workout data from AsyncStorage
@@ -100,9 +102,7 @@ export const [WorkoutProvider, useWorkoutStore] = createContextHook<WorkoutConte
   };
 
   const getExercisesByMuscleGroup = (muscleGroup: string) => {
-    // Import exercises dynamically to avoid circular dependency
-    const { defaultExercises } = require("@/data/exercises");
-    return defaultExercises.filter((exercise: any) => exercise.primary_muscle_group === muscleGroup);
+    return getExercisesByMuscleGroupFromStore(muscleGroup);
   };
 
   const createWorkoutDaysForMesocycle = async (mesocycle: MesoCycle, customWorkoutDays: WorkoutDayData[], params: MesocycleCreateParams) => {

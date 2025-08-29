@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import createContextHook from "@nkzw/create-context-hook";
 import { Exercise } from "@/types/workout";
-import { defaultExercises } from "@/data/exercises";
 import { generateId } from "@/utils/helpers";
 
 interface ExerciseContextType {
@@ -38,7 +37,10 @@ export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseCo
     loadExercises();
   }, []);
 
-  const exercises = [...defaultExercises, ...customExercises];
+  // Load built-in exercise library from JSON
+  const builtInExercises = require("@/data/exerciseLibrary.json") as Exercise[];
+
+  const exercises = [...builtInExercises, ...customExercises];
 
   const getExerciseById = (id: string) => {
     return exercises.find(exercise => exercise.exercise_id === id);

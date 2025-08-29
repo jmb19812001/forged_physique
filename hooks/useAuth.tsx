@@ -61,14 +61,13 @@ export const [AuthProvider, useAuth] = createContextHook<AuthContextType>(() => 
       const users: User[] = usersJson ? JSON.parse(usersJson) : [];
       
       const foundUser = users.find(u => u.email === email);
-      
-      if (!foundUser) {
-        throw new Error("User not found");
+
+      if (!foundUser || foundUser.password_hash !== password) {
+        throw new Error("Invalid credentials");
       }
-      
-      // In a real app, we would hash the password and compare
-      // For this demo, we'll just check if the user exists
-      
+
+      // In a real app, we would hash the password and compare securely
+
       setUser(foundUser);
       await AsyncStorage.setItem("user", JSON.stringify(foundUser));
     } catch (error) {

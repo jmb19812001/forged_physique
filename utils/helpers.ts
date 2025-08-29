@@ -13,7 +13,8 @@ export function formatDate(dateString: string): string {
 
 export function getDayOfWeekName(dayNumber: number): string {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  return days[(dayNumber - 1) % 7];
+  const index = ((dayNumber - 1) % 7 + 7) % 7;
+  return days[index];
 }
 
 export function calculateEstimated1RM(weight: number, reps: number): number {

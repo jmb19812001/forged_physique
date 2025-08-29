@@ -3,6 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
+    "types": ["node"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "paths": {
       "@/*": ["./*"]
       // or if you have a src directory:

@@ -59,7 +59,24 @@ Forged Physique is a full-stack mobile application for iOS and Android designed 
 2. **Install Dependencies**: Run `npm install` to install required npm packages.
 3. **Run the Backend Server**: In a separate terminal, run `npm run backend` to start the backend server.
 4. **Run the App**: Use `npm start` to launch the app in development mode. You can then scan the QR code with Expo Go or use a simulator.
-5. **Environment Variables (Production)**: For production builds, you will need to set the `EXPO_PUBLIC_API_URL` environment variable to the URL of your deployed backend.
+5. **Environment Variables**: Copy `.env.example` to `.env` and provide values for `TURSO_URL` and `TURSO_AUTH_TOKEN` so the backend can connect to your Turso instance.
+6. **Environment Variables (Production)**: For production builds, set the `EXPO_PUBLIC_API_URL` environment variable to the URL of your deployed backend.
+
+### Database Migrations & Seeding
+
+1. Ensure the Turso environment variables above are set.
+2. Generate migrations from the Drizzle schema:
+   ```
+   npx drizzle-kit generate
+   ```
+3. Apply migrations to the database:
+   ```
+   npx drizzle-kit push
+   ```
+4. (Optional) Seed initial data using your preferred script, for example:
+   ```
+   npx tsx backend/seed.ts
+   ```
 
 ## Admin Console
 

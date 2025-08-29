@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import createContextHook from "@nkzw/create-context-hook";
 import { Exercise } from "@/types/workout";
-import { defaultExercises } from "@/data/exercises";
+import { trpc } from "@/lib/trpc";
 import { generateId } from "@/utils/helpers";
 
 interface ExerciseContextType {
@@ -19,6 +19,7 @@ interface ExerciseContextType {
 
 export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseContextType>(() => {
   const [customExercises, setCustomExercises] = useState<Exercise[]>([]);
+  const [remoteExercises, setRemoteExercises] = useState<Exercise[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +39,19 @@ export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseCo
     loadExercises();
   }, []);
 
-  const exercises = [...defaultExercises, ...customExercises];
+  // Fetch exercise library from API (Turso) with JSON fallback
+  const { data: dbExercises, isLoading: dbLoading } = trpc.exercises.list.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (dbExercises) setRemoteExercises(dbExercises as Exercise[]);
+  }, [dbExercises]);
+
+  const jsonFallback = require("@/data/exerciseLibrary.json") as Exercise[];
+  const builtInExercises = (remoteExercises ?? dbExercises ?? jsonFallback) as Exercise[];
+
+  const exercises = [...builtInExercises, ...customExercises];
 
   const getExerciseById = (id: string) => {
     return exercises.find(exercise => exercise.exercise_id === id);
@@ -80,7 +93,7 @@ export const [ExerciseProvider, useExerciseStore] = createContextHook<ExerciseCo
   return {
     exercises,
     customExercises,
-    isLoading,
+    isLoading: isLoading || dbLoading,
     getExerciseById,
     getMuscleGroups,
     getExercisesByMuscleGroup,

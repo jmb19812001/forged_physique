@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Switch, Alert, Keyboard, useWindowDimensions } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Switch, Alert, Keyboard, useWindowDimensions, Platform } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useMesocycleStore } from "@/hooks/useMesocycleStore";
 import { useExerciseStore } from "@/hooks/useExerciseStore";
 import { useWorkoutStore } from "@/hooks/useWorkoutStore";
-import { ChevronDown, ChevronRight, Plus } from "lucide-react-native";
+import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import SelectField from "@/components/SelectField";
 import { defaultWorkoutTemplates } from "@/data/workoutTemplates";
@@ -12,7 +12,7 @@ import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
 
 export default function CreateMesocycleScreen() {
   const { type = "preset", selectedExercises, dayName: dayNameParam } = useLocalSearchParams<{selectedExercises?: string, dayName?: string, type?: string}>();
-  const { createMesocycle } = useMesocycleStore();
+  const { createMesocycle, mesocycles } = useMesocycleStore();
   const { getMuscleGroups, getExerciseById } = useExerciseStore();
   const { createWorkoutDaysForMesocycle } = useWorkoutStore();
   
@@ -30,6 +30,28 @@ export default function CreateMesocycleScreen() {
   ]);
   
   const muscleGroups = getMuscleGroups();
+
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+
+  const getSuggestedName = (base: string) => {
+    const existing = mesocycles.map(m => m.meso_name.trim().toLowerCase());
+    const b = base.trim();
+    if (!b) return "";
+    const lower = b.toLowerCase();
+    if (!existing.includes(lower)) return b;
+    let n = 2;
+    while (existing.includes(`${lower} (${n})`)) n++;
+    return `${b} (${n})`;
+  };
+
+  const getNextAvailableDay = (usedDays: string[], start: string) => {
+    const startIdx = daysOfWeek.indexOf(start as any);
+    for (let i = 0; i < daysOfWeek.length; i++) {
+      const name = daysOfWeek[(startIdx + i) % 7];
+      if (!usedDays.includes(name)) return name;
+    }
+    return null;
+  };
 
   useEffect(() => {
     // Initialize muscle groups for each day
@@ -84,8 +106,8 @@ export default function CreateMesocycleScreen() {
           }
         ]
       );
-    } catch (error) {
-      Alert.alert("Error", "Failed to create mesocycle. Please try again.");
+    } catch (error: any) {
+      Alert.alert("Error", error?.message || "Failed to create mesocycle. Please try again.");
     }
   };
 
@@ -106,25 +128,71 @@ export default function CreateMesocycleScreen() {
   };
 
   const addNewDay = () => {
-    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const usedDays = workoutDays.map(d => d.dayName);
-    const nextAvailableDay = daysOfWeek.find(day => !usedDays.includes(day)) || `Day ${workoutDays.length + 1}`;
-    
-    const newDay = { dayName: nextAvailableDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })), exercise_ids: [] };
+    if (usedDays.length >= 7) {
+      Alert.alert("Limit Reached", "You already have 7 days. Remove one before adding more.");
+      return;
+    }
+    const nextDay = getNextAvailableDay(usedDays, startDay);
+    if (!nextDay) {
+      Alert.alert("No Days Available", "All days of the week are already in use.");
+      return;
+    }
+
+    const newDay = { dayName: nextDay, enabled: true, muscleGroups: muscleGroups.map(mg => ({ name: mg, enabled: false })), exercise_ids: [] };
 
     const sortedDays = [...workoutDays, newDay].sort((a, b) => {
-      const dayAIndex = daysOfWeek.indexOf(a.dayName);
-      const dayBIndex = daysOfWeek.indexOf(b.dayName);
-
-      // Handle cases where dayName is not in daysOfWeek (e.g., "Day 5")
-      if (dayAIndex === -1) return 1;
-      if (dayBIndex === -1) return -1;
-
-      return dayAIndex - dayBIndex;
+      const aIdx = daysOfWeek.indexOf(a.dayName as any);
+      const bIdx = daysOfWeek.indexOf(b.dayName as any);
+      return aIdx - bIdx;
     });
 
     setWorkoutDays(sortedDays);
-    setDaysPerWeek((parseInt(daysPerWeek) + 1).toString());
+    const newCount = Math.min(7, parseInt(daysPerWeek) + 1);
+    setDaysPerWeek(newCount.toString());
+  };
+
+  const handleStartDayChange = (newStartDay: string) => {
+    setStartDay(newStartDay);
+
+    const count = workoutDays.length;
+    if (count === 0) return;
+
+    const startIdx = daysOfWeek.indexOf(newStartDay as any);
+    // Use current spacing between days and rebase to new start
+    const sortedByCurrent = [...workoutDays].sort((a, b) => daysOfWeek.indexOf(a.dayName as any) - daysOfWeek.indexOf(b.dayName as any));
+    const currentIndices = sortedByCurrent.map(d => daysOfWeek.indexOf(d.dayName as any)).filter(i => i >= 0);
+    if (currentIndices.length === 0) return;
+    const base = currentIndices[0];
+    const offsets = currentIndices.map(i => (i - base + 7) % 7);
+    const newNames = offsets.map(off => daysOfWeek[(startIdx + off) % 7]);
+
+    const remapped = sortedByCurrent.map((day, i) => ({ ...day, dayName: newNames[i] }));
+    setWorkoutDays(remapped);
+  };
+
+  const removeDay = (index: number) => {
+    const performRemove = () => {
+      setWorkoutDays(prev => prev.filter((_, i) => i !== index));
+      const newCount = Math.max(0, parseInt(daysPerWeek) - 1);
+      setDaysPerWeek(newCount.toString());
+    };
+
+    // On web, Alert actions are not reliable; remove immediately
+    if (Platform.OS === "web") {
+      performRemove();
+      return;
+    }
+
+    const day = workoutDays[index];
+    Alert.alert(
+      "Remove Day",
+      `Remove ${day.dayName} from your plan?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Remove", style: "destructive", onPress: performRemove }
+      ]
+    );
   };
 
   const { width } = useWindowDimensions();
@@ -215,7 +283,7 @@ export default function CreateMesocycleScreen() {
               label="What day of the week will you begin your meso?"
               value={startDay}
               options={["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]}
-              onSelect={setStartDay}
+              onSelect={handleStartDayChange}
             />
           </View>
 
@@ -261,6 +329,14 @@ export default function CreateMesocycleScreen() {
               onSubmitEditing={() => Keyboard.dismiss()}
               inputAccessoryViewID={ACCESSORY_ID}
             />
+            {!!mesoName.trim() && mesocycles.some(m => m.meso_name.trim().toLowerCase() === mesoName.trim().toLowerCase()) && (
+              <View style={styles.nameWarningRow}>
+                <Text style={styles.nameWarning}>Name already exists.</Text>
+                <Pressable onPress={() => setMesoName(getSuggestedName(mesoName))} style={styles.suggestButton}>
+                  <Text style={styles.suggestText}>Use "{getSuggestedName(mesoName)}"</Text>
+                </Pressable>
+              </View>
+            )}
           </View>
         
           <View style={[styles.inputContainer, isWide && styles.gridItem]}>
@@ -286,15 +362,24 @@ export default function CreateMesocycleScreen() {
           <Text style={styles.sectionTitle}>Workout Days</Text>
           
           {workoutDays.map((day, dayIndex) => (
-            <View key={dayIndex} style={styles.dayCard}>
+            <View key={day.dayName} style={styles.dayCard}>
               <View style={styles.dayCardHeader}>
                 <Text style={styles.dayCardTitle}>{day.dayName}</Text>
-                <Switch
-                  value={day.enabled}
-                  onValueChange={() => toggleDayEnabled(dayIndex)}
-                  trackColor={{ false: "#333", true: "#e74c3c" }}
-                  thumbColor="#fff"
-                />
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Pressable
+                    accessibilityLabel={`Remove ${day.dayName}`}
+                    onPress={() => removeDay(dayIndex)}
+                    style={styles.removeDayButton}
+                  >
+                    <Trash2 size={16} color="#e74c3c" />
+                  </Pressable>
+                  <Switch
+                    value={day.enabled}
+                    onValueChange={() => toggleDayEnabled(dayIndex)}
+                    trackColor={{ false: "#333", true: "#e74c3c" }}
+                    thumbColor="#fff"
+                  />
+                </View>
               </View>
               
               {day.enabled && (
@@ -350,10 +435,12 @@ export default function CreateMesocycleScreen() {
             </View>
           ))}
           
-          <Pressable style={styles.addDayButton} onPress={addNewDay}>
-            <Plus size={20} color="#fff" />
-            <Text style={styles.addDayButtonText}>ADD DAY</Text>
-          </Pressable>
+          {workoutDays.length < 7 && (
+            <Pressable style={styles.addDayButton} onPress={addNewDay}>
+              <Plus size={20} color="#fff" />
+              <Text style={styles.addDayButtonText}>ADD DAY</Text>
+            </Pressable>
+          )}
         </View>
       )}
 
@@ -515,6 +602,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
   },
+  removeDayButton: {
+    marginRight: 12,
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: "#1a1a1a",
+  },
   viewExercisesButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -568,5 +661,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#aaa",
     marginBottom: 5,
+  },
+  nameWarningRow: {
+    marginTop: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  nameWarning: {
+    color: "#e74c3c",
+    fontSize: 12,
+  },
+  suggestButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "#333",
+    borderRadius: 6,
+  },
+  suggestText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "700" as const,
   },
 });

@@ -1,19 +1,38 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Pressable, Alert } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Pressable, Alert, Modal, TextInput, Platform } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useMesocycleStore } from "@/hooks/useMesocycleStore";
 import { useWorkoutStore } from "@/hooks/useWorkoutStore";
 import { MesoCycle, WorkoutDay } from "@/types/workout";
 import { Calendar, ChevronRight, Edit2, Trash2 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { ACCESSORY_ID } from "@/components/InputAccessoryBar";
+import ConfirmBar from "@/components/ConfirmBar";
 
 export default function MesocycleDetailScreen() {
   const { mesoId } = useLocalSearchParams();
-  const { getMesocycleById, deleteMesocycle, setActiveMesocycle } = useMesocycleStore();
+  const { getMesocycleById, deleteMesocycle, setActiveMesocycle, updateMesocycle, mesocycles } = useMesocycleStore();
   const { getWorkoutDaysForMesocycle } = useWorkoutStore();
   
   const [mesocycle, setMesocycle] = useState<MesoCycle | null>(null);
   const [workoutDays, setWorkoutDays] = useState<WorkoutDay[]>([]);
+  const [editVisible, setEditVisible] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDuration, setEditDuration] = useState("");
+  const [confirmVisible, setConfirmVisible] = useState(false);
+
+  const getSuggestedName = (base: string) => {
+    const list = mesocycles
+      .filter((m) => m.meso_id !== mesocycle?.meso_id)
+      .map((m) => m.meso_name.trim().toLowerCase());
+    const b = base.trim();
+    if (!b) return "";
+    const lower = b.toLowerCase();
+    if (!list.includes(lower)) return b;
+    let n = 2;
+    while (list.includes(`${lower} (${n})`)) n++;
+    return `${b} (${n})`;
+  };
 
   useEffect(() => {
     if (mesoId) {
@@ -22,6 +41,8 @@ export default function MesocycleDetailScreen() {
         setMesocycle(meso);
         const days = getWorkoutDaysForMesocycle(mesoId as string);
         setWorkoutDays(days);
+        setEditName(meso.meso_name);
+        setEditDuration(String(meso.duration_weeks));
       }
     }
   }, [mesoId]);
@@ -37,27 +58,30 @@ export default function MesocycleDetailScreen() {
     }
   };
 
-  const handleDelete = () => {
-    Alert.alert(
-      "Delete Mesocycle",
-      "Are you sure you want to delete this mesocycle? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: () => {
-            if (mesocycle) {
-              deleteMesocycle(mesocycle.meso_id);
-              router.replace("/mesocycles");
-            }
-          },
-          style: "destructive",
-        },
-      ]
-    );
+  const handleDelete = () => setConfirmVisible(true);
+  const performDelete = async () => {
+    setConfirmVisible(false);
+    if (mesocycle) {
+      await deleteMesocycle(mesocycle.meso_id);
+      router.replace("/mesocycles");
+    }
+  };
+
+  const openEdit = () => setEditVisible(true);
+  const saveEdit = async () => {
+    if (!mesocycle) return;
+    const duration = parseInt(editDuration || "0");
+    if (!editName.trim() || !duration || duration < 1) {
+      Alert.alert("Invalid Input", "Please enter a valid name and duration.");
+      return;
+    }
+    try {
+      const updated = await updateMesocycle(mesocycle.meso_id, { meso_name: editName.trim(), duration_weeks: duration });
+      setMesocycle(updated);
+      setEditVisible(false);
+    } catch (e:any) {
+      Alert.alert("Error", e?.message || "Failed to update mesocycle");
+    }
   };
 
   if (!mesocycle) {
@@ -69,6 +93,7 @@ export default function MesocycleDetailScreen() {
   }
 
   return (
+    <>
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <LinearGradient
         colors={["#2a2a2a", "#1e1e1e"]}
@@ -144,7 +169,7 @@ export default function MesocycleDetailScreen() {
       <View style={[styles.actionButtons, styles.maxWidth]}>
         <Pressable 
           style={[styles.actionButton, styles.editButton]}
-          onPress={() => {}}
+          onPress={openEdit}
         >
           <Edit2 size={20} color="#fff" />
           <Text style={styles.actionButtonText}>EDIT</Text>
@@ -159,6 +184,60 @@ export default function MesocycleDetailScreen() {
         </Pressable>
       </View>
     </ScrollView>
+    
+    {/* Edit Modal */}
+    <Modal visible={editVisible} transparent animationType="slide" onRequestClose={() => setEditVisible(false)}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.editModal}>
+          <Text style={styles.editTitle}>Edit Mesocycle</Text>
+          <Text style={styles.inputLabel}>Name</Text>
+          <TextInput
+            style={styles.textInput}
+            value={editName}
+            onChangeText={setEditName}
+            placeholder="e.g., Push/Pull/Legs"
+            placeholderTextColor="#888"
+            inputAccessoryViewID={ACCESSORY_ID}
+          />
+          {!!editName.trim() && mesocycles.some(m => m.meso_id !== mesocycle.meso_id && m.meso_name.trim().toLowerCase() === editName.trim().toLowerCase()) && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
+              <Text style={{ color: '#e74c3c', fontSize: 12 }}>Name already exists.</Text>
+              <Pressable onPress={() => setEditName(getSuggestedName(editName))} style={{ backgroundColor: '#333', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 }}>
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>Use "{getSuggestedName(editName)}"</Text>
+              </Pressable>
+            </View>
+          )}
+          <Text style={styles.inputLabel}>Duration (weeks)</Text>
+          <TextInput
+            style={styles.textInput}
+            value={editDuration}
+            onChangeText={setEditDuration}
+            keyboardType="numeric"
+            placeholder="4"
+            placeholderTextColor="#888"
+            inputAccessoryViewID={ACCESSORY_ID}
+          />
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
+            <Pressable style={[styles.actionButton, styles.editButton]} onPress={() => setEditVisible(false)}>
+              <Text style={styles.actionButtonText}>CANCEL</Text>
+            </Pressable>
+            <Pressable style={[styles.actionButton, styles.activateButton]} onPress={saveEdit}>
+              <Text style={styles.actionButtonText}>SAVE</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+
+    <ConfirmBar
+      visible={confirmVisible}
+      message={`Delete "${mesocycle?.meso_name}"? This cannot be undone.`}
+      confirmLabel="Delete"
+      cancelLabel="Cancel"
+      onConfirm={performDelete}
+      onCancel={() => setConfirmVisible(false)}
+    />
+    </>
   );
 }
 
@@ -312,4 +391,38 @@ const styles = StyleSheet.create({
     fontWeight: "700" as const,
     marginLeft: 10,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  editModal: {
+    backgroundColor: "#1e1e1e",
+    borderRadius: 10,
+    width: "90%",
+    padding: 16,
+  },
+  editTitle: {
+    fontSize: 18,
+    fontWeight: "700" as const,
+    color: "#fff",
+    marginBottom: 10,
+  },
+  inputLabel: {
+    color: "#fff",
+    marginBottom: 6,
+    marginTop: 8,
+  },
+  textInput: {
+    backgroundColor: "#2a2a2a",
+    borderRadius: 8,
+    padding: 12,
+    color: "#fff",
+  },
 });
+
+
+
+
+

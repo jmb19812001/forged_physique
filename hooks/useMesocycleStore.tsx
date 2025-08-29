@@ -12,6 +12,7 @@ interface MesocycleContextType {
   getMesocycleById: (id: string) => MesoCycle | undefined;
   getActiveMesocycle: () => MesoCycle | undefined;
   setActiveMesocycle: (id: string) => Promise<void>;
+  updateMesocycle: (id: string, updates: Partial<Pick<MesoCycle, 'meso_name' | 'duration_weeks' | 'start_date'>>) => Promise<MesoCycle>;
   deleteMesocycle: (id: string) => Promise<void>;
 }
 
@@ -60,6 +61,12 @@ export const [MesocycleProvider, useMesocycleStore] = createContextHook<Mesocycl
     if (!user) throw new Error("User not authenticated");
     
     try {
+      // Enforce unique name per user (case-insensitive)
+      const nameLower = params.meso_name.trim().toLowerCase();
+      const duplicate = mesocycles.some(m => m.meso_name.trim().toLowerCase() === nameLower);
+      if (duplicate) {
+        throw new Error("Mesocycle name already exists. Please choose a unique name.");
+      }
       // Deactivate any currently active mesocycle
       const updatedMesocycles = mesocycles.map(meso => ({
         ...meso,
@@ -111,13 +118,46 @@ export const [MesocycleProvider, useMesocycleStore] = createContextHook<Mesocycl
     }
   };
 
+  const updateMesocycle = async (id: string, updates: Partial<Pick<MesoCycle, 'meso_name' | 'duration_weeks' | 'start_date'>>) => {
+    if (!user) throw new Error("User not authenticated");
+    try {
+      const target = mesocycles.find(m => m.meso_id === id);
+      if (!target) throw new Error("Mesocycle not found");
+
+      if (updates.meso_name) {
+        const nameLower = updates.meso_name.trim().toLowerCase();
+        const duplicate = mesocycles.some(m => m.meso_id !== id && m.meso_name.trim().toLowerCase() === nameLower);
+        if (duplicate) throw new Error("Mesocycle name already exists. Please choose a unique name.");
+      }
+
+      const updated = mesocycles.map(m => m.meso_id === id ? { ...m, ...updates } as MesoCycle : m);
+      await saveMesocycles(updated);
+      return updated.find(m => m.meso_id === id)!;
+    } catch (error) {
+      console.error("Failed to update mesocycle:", error);
+      throw error;
+    }
+  };
+
   const deleteMesocycle = async (id: string) => {
     try {
       const updatedMesocycles = mesocycles.filter(meso => meso.meso_id !== id);
       await saveMesocycles(updatedMesocycles);
       
-      // Also delete related workout days
-      // This would be handled by the WorkoutStore
+      // Also delete related workout days for this meso from AsyncStorage
+      if (user) {
+        try {
+          const key = `workoutDays_${user.user_id}`;
+          const daysJson = await AsyncStorage.getItem(key);
+          if (daysJson) {
+            const days = JSON.parse(daysJson);
+            const filtered = days.filter((d: any) => d.meso_id !== id);
+            await AsyncStorage.setItem(key, JSON.stringify(filtered));
+          }
+        } catch (e) {
+          console.warn("Failed to delete workout days for mesocycle:", e);
+        }
+      }
     } catch (error) {
       console.error("Failed to delete mesocycle:", error);
       throw error;
@@ -131,6 +171,7 @@ export const [MesocycleProvider, useMesocycleStore] = createContextHook<Mesocycl
     getMesocycleById,
     getActiveMesocycle,
     setActiveMesocycle,
+    updateMesocycle,
     deleteMesocycle,
   };
 });

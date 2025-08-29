@@ -13,7 +13,6 @@
     "@trpc/client": "^11",
     "@trpc/react-query": "^11",
     "@trpc/server": "^11",
-    "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.44.5",
     "expo": "^53.0.0",
     "expo-checkbox": "^4.1.4",
@@ -44,6 +43,7 @@
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-preset-expo": "^14.0.0",
+    "drizzle-kit": "^0.31.4",
     "tsx": "^4.7.2",
     "typescript": "~5.8.3"
   },

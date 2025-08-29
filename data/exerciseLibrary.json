@@ -1,0 +1,146 @@
+[
+  {
+    "name": "Barbell Bench Press",
+    "primary_muscle_group": "Chest",
+    "target_muscle": "Pectoralis major (sternal head)",
+    "equipment": "Barbell",
+    "instructions": "Lie on a flat bench, plant feet, and grip the bar just wider than shoulder width. Lower under control to mid-chest, keeping forearms vertical, then drive the bar to full lockout."
+  },
+  {
+    "name": "Incline Dumbbell Press",
+    "primary_muscle_group": "Chest",
+    "target_muscle": "Upper pectorals (clavicular head)",
+    "equipment": "Dumbbell",
+    "instructions": "Set bench at 30–45°. Press dumbbells from shoulder level up and slightly together, squeezing at the top. Lower slowly, maintaining a slight arch in the chest and neutral wrists."
+  },
+  {
+    "name": "Cable Fly",
+    "primary_muscle_group": "Chest",
+    "target_muscle": "Inner pectorals",
+    "equipment": "Cable",
+    "instructions": "Stand centered between pulleys with a slight forward lean. With a small bend in the elbows, bring handles together in a hugging motion and squeeze the chest. Return in a wide arc, resisting the weight."
+  },
+  {
+    "name": "Machine Chest Press",
+    "primary_muscle_group": "Chest",
+    "target_muscle": "Mid-pectorals",
+    "equipment": "Machine",
+    "instructions": "Adjust seat so handles line up with mid-chest. Drive the handles forward to full extension, keeping shoulder blades pinned. Control the return and avoid bouncing at the bottom."
+  },
+
+  {
+    "name": "Barbell Row",
+    "primary_muscle_group": "Back",
+    "target_muscle": "Mid-back (lats and rhomboids)",
+    "equipment": "Barbell",
+    "instructions": "Hinge at the hips until torso is near parallel to the floor. Pull the bar to your lower chest or upper stomach, squeezing shoulder blades together. Lower smoothly, maintaining a tight core and flat back."
+  },
+  {
+    "name": "One-Arm Dumbbell Row",
+    "primary_muscle_group": "Back",
+    "target_muscle": "Latissimus dorsi (one side)",
+    "equipment": "Dumbbell",
+    "instructions": "Brace one knee and hand on a bench. Row the dumbbell toward your hip, driving elbow back and keeping shoulder packed. Lower slowly, avoiding torso twist or momentum."
+  },
+  {
+    "name": "Lat Pulldown",
+    "primary_muscle_group": "Back",
+    "target_muscle": "Latissimus dorsi",
+    "equipment": "Cable",
+    "instructions": "Grip the bar wide. Pull to upper chest while driving elbows down and slightly back. Pause and squeeze lats, then allow the bar to rise in a controlled fashion without shrugging."
+  },
+  {
+    "name": "Seated Row Machine",
+    "primary_muscle_group": "Back",
+    "target_muscle": "Mid-back (rhomboids, traps)",
+    "equipment": "Machine",
+    "instructions": "Sit tall with chest against the pad if available. Pull the handles toward your torso, leading with elbows. Squeeze the back at full contraction, then extend arms forward without rounding shoulders."
+  },
+
+  {
+    "name": "Back Squat",
+    "primary_muscle_group": "Legs",
+    "target_muscle": "Quadriceps and glutes",
+    "equipment": "Barbell",
+    "instructions": "Set bar high on traps, brace core, and descend by sitting back and down until thighs are at least parallel. Drive through heels to stand, keeping knees in line with toes and chest tall."
+  },
+  {
+    "name": "Dumbbell Lunge",
+    "primary_muscle_group": "Legs",
+    "target_muscle": "Glutes and quads",
+    "equipment": "Dumbbell",
+    "instructions": "Step forward with one leg, lowering until back knee hovers just above floor. Keep torso upright and front knee tracking over toes. Push through front heel to return and alternate legs."
+  },
+  {
+    "name": "Cable Pull-Through",
+    "primary_muscle_group": "Legs",
+    "target_muscle": "Glutes and hamstrings",
+    "equipment": "Cable",
+    "instructions": "Face away from a low pulley with rope between legs. Hinge at hips letting rope pull arms through, then squeeze glutes to stand tall. Keep back neutral and avoid leaning forward."
+  },
+  {
+    "name": "Leg Press",
+    "primary_muscle_group": "Legs",
+    "target_muscle": "Quadriceps",
+    "equipment": "Machine",
+    "instructions": "Place feet shoulder-width on platform. Lower the sled until knees reach ~90°, keeping lower back on the pad. Press up without locking knees, focusing on driving through mid-foot."
+  },
+
+  {
+    "name": "Overhead Press",
+    "primary_muscle_group": "Shoulders",
+    "target_muscle": "Anterior and lateral deltoids",
+    "equipment": "Barbell",
+    "instructions": "Press the bar from shoulders to overhead, moving head slightly back then through. Lock out with biceps close to ears, lower under control, and keep core braced."
+  },
+  {
+    "name": "Lateral Raise",
+    "primary_muscle_group": "Shoulders",
+    "target_muscle": "Lateral deltoids",
+    "equipment": "Dumbbell",
+    "instructions": "With slight bend in elbows, lift dumbbells out to the sides to shoulder height. Pause briefly, then lower slowly, keeping shoulders depressed and torso still."
+  },
+  {
+    "name": "Face Pull",
+    "primary_muscle_group": "Shoulders",
+    "target_muscle": "Rear deltoids and upper traps",
+    "equipment": "Cable",
+    "instructions": "Set rope at eye level. Pull toward face while separating hands, leading with elbows high. Squeeze rear delts and traps, then return without letting shoulders round."
+  },
+  {
+    "name": "Machine Shoulder Press",
+    "primary_muscle_group": "Shoulders",
+    "target_muscle": "Anterior deltoids",
+    "equipment": "Machine",
+    "instructions": "Adjust seat so handles align with shoulders. Press upward to full extension, keeping lower back against pad. Lower with control, stopping just above shoulder level."
+  },
+
+  {
+    "name": "Barbell Curl",
+    "primary_muscle_group": "Arms",
+    "target_muscle": "Biceps brachii",
+    "equipment": "Barbell",
+    "instructions": "Stand tall with an underhand grip. Curl the bar toward shoulder height while keeping elbows pinned. Squeeze at top and lower slowly without swinging."
+  },
+  {
+    "name": "Hammer Curl",
+    "primary_muscle_group": "Arms",
+    "target_muscle": "Brachialis and brachioradialis",
+    "equipment": "Dumbbell",
+    "instructions": "Hold dumbbells with neutral grip. Curl both arms, keeping elbows close to sides and palms facing each other. Lower under control, feeling forearms and biceps work together."
+  },
+  {
+    "name": "Tricep Pushdown",
+    "primary_muscle_group": "Arms",
+    "target_muscle": "Triceps brachii",
+    "equipment": "Cable",
+    "instructions": "With elbows locked to your sides, extend bar or rope downward until arms are straight. Pause to flex triceps, then let weight rise slowly to a 90° elbow angle."
+  },
+  {
+    "name": "Machine Preacher Curl",
+    "primary_muscle_group": "Arms",
+    "target_muscle": "Biceps (short head)",
+    "equipment": "Machine",
+    "instructions": "Position upper arms on pad and grip handles. Curl weight up while keeping arms glued to pad, then lower until elbows almost straighten, using a smooth, controlled tempo."
+  }
+]

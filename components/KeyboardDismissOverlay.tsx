@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Keyboard, Platform, StyleSheet, Text, View } from "react-native";
-import { Button, ButtonText } from "@gluestack-ui/themed";
+import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { ChevronDown } from "lucide-react-native";
 
 export default function KeyboardDismissOverlay() {
@@ -21,10 +20,10 @@ export default function KeyboardDismissOverlay() {
 
   return (
     <View pointerEvents="box-none" style={styles.container}>
-      <Button accessibilityLabel="Hide keyboard" style={styles.button} onPress={() => Keyboard.dismiss()}>
+      <Pressable accessibilityLabel="Hide keyboard" style={styles.button} onPress={() => Keyboard.dismiss()}>
         <ChevronDown size={18} color="#fff" />
-        <ButtonText style={styles.label}>Hide Keyboard</ButtonText>
-      </Button>
+        <Text style={styles.label}>Hide Keyboard</Text>
+      </Pressable>
     </View>
   );
 }

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, ScrollView, Switch, Alert } from "react-native";
-import { Pressable, Card } from "@gluestack-ui/themed";
+import { StyleSheet, Text, View, ScrollView, Pressable, Switch, Alert } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
 import { ChevronRight, LogOut, Settings, User } from "lucide-react-native";
@@ -42,7 +41,7 @@ export default function ProfileScreen() {
         <Text style={styles.subtitle}>Manage your account and settings</Text>
       </View>
 
-      <Card style={styles.profileCard}>
+      <View style={styles.profileCard}>
         <View style={styles.profileAvatar}>
           <User size={40} color="#fff" />
         </View>
@@ -50,12 +49,12 @@ export default function ProfileScreen() {
           <Text style={styles.profileName}>{user?.user_name || "User"}</Text>
           <Text style={styles.profileEmail}>{user?.email || "user@example.com"}</Text>
         </View>
-      </Card>
+      </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Settings</Text>
         
-        <Card style={styles.settingCard}>
+        <View style={styles.settingCard}>
           <View style={styles.settingRow}>
             <Text style={styles.settingLabel}>Use Kilograms (kg)</Text>
             <Switch
@@ -79,13 +78,13 @@ export default function ProfileScreen() {
             <Text style={styles.settingLabel}>App Appearance</Text>
             <ChevronRight size={20} color="#888" />
           </Pressable>
-        </Card>
+        </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Account</Text>
         
-        <Card style={styles.settingCard}>
+        <View style={styles.settingCard}>
           <Pressable style={styles.settingRow}>
             <Text style={styles.settingLabel}>Edit Profile</Text>
             <ChevronRight size={20} color="#888" />
@@ -110,13 +109,13 @@ export default function ProfileScreen() {
             </View>
             <ChevronRight size={20} color="#888" />
           </Pressable>
-        </Card>
+        </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About</Text>
         
-        <Card style={styles.settingCard}>
+        <View style={styles.settingCard}>
           <Pressable style={styles.settingRow}>
             <Text style={styles.settingLabel}>Privacy Policy</Text>
             <ChevronRight size={20} color="#888" />
@@ -135,7 +134,7 @@ export default function ProfileScreen() {
             <Text style={styles.settingLabel}>App Version</Text>
             <Text style={styles.versionText}>1.0.0</Text>
           </Pressable>
-        </Card>
+        </View>
       </View>
     </ScrollView>
   );

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Modal, StyleSheet, Text, View, Platform, ScrollView } from "react-native";
-import { Pressable, Button, ButtonText, Card } from "@gluestack-ui/themed";
+import { Modal, Pressable, StyleSheet, Text, View, Platform, ScrollView } from "react-native";
 import { ChevronDown, Check } from "lucide-react-native";
 
 type Props = {
@@ -28,7 +27,7 @@ export default function SelectField({ label, value, placeholder = "Select", opti
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <View style={styles.modalOverlay}>
-          <Card style={styles.modalCard}>
+          <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>{label || placeholder}</Text>
             <ScrollView style={{ maxHeight: 360 }}>
               {options.map((opt) => {
@@ -49,11 +48,11 @@ export default function SelectField({ label, value, placeholder = "Select", opti
               })}
             </ScrollView>
             <View style={styles.modalActions}>
-              <Button style={styles.cancelButton} onPress={() => setOpen(false)}>
-                <ButtonText style={styles.cancelText}>Close</ButtonText>
-              </Button>
+              <Pressable style={styles.cancelButton} onPress={() => setOpen(false)}>
+                <Text style={styles.cancelText}>Close</Text>
+              </Pressable>
             </View>
-          </Card>
+          </View>
         </View>
       </Modal>
     </View>

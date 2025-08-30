@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import { Pressable, Card } from "@gluestack-ui/themed";
+import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import { useProgressStore } from "@/hooks/useProgressStore";
 import { useExerciseStore } from "@/hooks/useExerciseStore";
 import { Exercise } from "@/types/workout";
@@ -36,7 +35,7 @@ export default function ProgressScreen() {
         </Pressable>
         
         {showExerciseDropdown && (
-          <Card style={styles.exerciseDropdown}>
+          <View style={styles.exerciseDropdown}>
             {exercises.slice(0, 5).map((exercise) => (
               <Pressable
                 key={exercise.exercise_id}
@@ -49,11 +48,11 @@ export default function ProgressScreen() {
                 <Text style={styles.exerciseDropdownText}>{exercise.name}</Text>
               </Pressable>
             ))}
-          </Card>
+          </View>
         )}
         
         {selectedExercise ? (
-          <Card style={styles.chartContainer}>
+          <View style={styles.chartContainer}>
             <View style={styles.chartHeader}>
               <Text style={styles.chartTitle}>{selectedExercise.name}</Text>
               <Text style={styles.chartSubtitle}>Estimated 1RM (lbs)</Text>
@@ -84,19 +83,19 @@ export default function ProgressScreen() {
               <Text style={styles.chartXAxisLabel}>Week 4</Text>
               <Text style={styles.chartXAxisLabel}>Week 5</Text>
             </View>
-          </Card>
+          </View>
         ) : (
-          <Card style={styles.emptyChart}>
+          <View style={styles.emptyChart}>
             <TrendingUp size={40} color="#888" />
             <Text style={styles.emptyChartText}>Select an exercise to view progress</Text>
-          </Card>
+          </View>
         )}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Average Sets per Muscle Group</Text>
         
-        <Card style={styles.barChartContainer}>
+        <View style={styles.barChartContainer}>
           <View style={styles.barChart}>
             <View style={styles.barChartYAxis}>
               <Text style={styles.barChartYAxisLabel}>20</Text>
@@ -129,14 +128,14 @@ export default function ProgressScreen() {
               </View>
             </View>
           </View>
-        </Card>
+        </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Personal Records</Text>
         
         <View style={styles.prContainer}>
-          <Card style={styles.prCard}>
+          <View style={styles.prCard}>
             <Text style={styles.prExercise}>Barbell Bench Press</Text>
             <View style={styles.prDetails}>
               <View style={styles.prDetail}>
@@ -146,9 +145,9 @@ export default function ProgressScreen() {
               <Text style={styles.prReps}>x 5 reps</Text>
             </View>
             <Text style={styles.prDate}>July 5, 2025</Text>
-          </Card>
+          </View>
           
-          <Card style={styles.prCard}>
+          <View style={styles.prCard}>
             <Text style={styles.prExercise}>Barbell Squat</Text>
             <View style={styles.prDetails}>
               <View style={styles.prDetail}>
@@ -158,9 +157,9 @@ export default function ProgressScreen() {
               <Text style={styles.prReps}>x 3 reps</Text>
             </View>
             <Text style={styles.prDate}>July 8, 2025</Text>
-          </Card>
+          </View>
           
-          <Card style={styles.prCard}>
+          <View style={styles.prCard}>
             <Text style={styles.prExercise}>Deadlift</Text>
             <View style={styles.prDetails}>
               <View style={styles.prDetail}>
@@ -170,7 +169,7 @@ export default function ProgressScreen() {
               <Text style={styles.prReps}>x 1 rep</Text>
             </View>
             <Text style={styles.prDate}>July 10, 2025</Text>
-          </Card>
+          </View>
         </View>
       </View>
     </ScrollView>

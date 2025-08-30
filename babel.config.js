@@ -7,7 +7,7 @@ module.exports = function(api) {
       }]
     ],
     plugins: [
-      'nativewind/babel',
+
       ['module-resolver', {
         root: ['./'],
         alias: {
